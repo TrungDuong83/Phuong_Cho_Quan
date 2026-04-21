@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Một ngày ở Phường Chợ Quán - Digital Flipbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --pink: #ff8fb1;
+    --pink-light: #ffd1dc;
+    --yellow: #ffd93d;
+    --yellow-light: #fff4c2;
+    --mint: #7ed9c4;
+    --mint-light: #c8f0e4;
+    --sky: #87ceeb;
+    --sky-light: #d4f1f9;
+    --coral: #ff9a76;
+    --purple: #b19cd9;
+    --cream: #fff8ed;
+    --dark: #3d2d56;
+    --brown: #8b6e4d;
+  }
+  
+  body {
+    font-family: 'Baloo 2', 'Comic Sans MS', cursive, sans-serif;
+    background: linear-gradient(135deg, #ffeef8 0%, #e0f7fa 50%, #fff4c2 100%);
+    background-size: 400% 400%;
+    animation: gradientBG 20s ease infinite;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    overflow-x: hidden;
+    position: relative;
+  }
+  
+  @keyframes gradientBG {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  
+  .floating-deco {
+    position: fixed;
+    font-size: 2rem;
+    opacity: 0.6;
+    pointer-events: none;
+    animation: float 6s ease-in-out infinite;
+    z-index: 0;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+  }
+  
+  .deco1 { top: 5%; left: 5%; animation-delay: 0s; }
+  .deco2 { top: 10%; right: 8%; animation-delay: 1s; }
+  .deco3 { bottom: 15%; left: 7%; animation-delay: 2s; }
+  .deco4 { bottom: 10%; right: 5%; animation-delay: 3s; }
+  .deco5 { top: 45%; left: 3%; animation-delay: 1.5s; }
+  .deco6 { top: 50%; right: 3%; animation-delay: 2.5s; }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--dark);
+    z-index: 2;
+    position: relative;
+  }
+  
+  .header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, var(--pink), var(--coral), var(--yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 3px;
+  }
+  
+  .header p {
+    font-size: 0.85rem;
+    color: #7a5c8a;
+    font-family: 'Patrick Hand', cursive;
+  }
+  
+  .book-container {
+    perspective: 2500px;
+    width: 100%;
+    max-width: 920px;
+    height: 600px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .book {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+  }
+  
+  .page {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    transform-origin: left center;
+    transition: transform 1.1s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transform-style: preserve-3d;
+    box-shadow: 3px 2px 20px rgba(136, 84, 137, 0.25);
+  }
+  
+  .page .front, .page .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: var(--cream);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    padding: 26px 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0 8px 8px 0;
+  }
+  
+  .page .back {
+    transform: rotateY(180deg);
+    border-radius: 8px 0 0 8px;
+  }
+  
+  .page.flipped {
+    transform: rotateY(-180deg);
+  }
+  
+  .left-static {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: var(--cream);
+    box-shadow: -3px 2px 20px rgba(136, 84, 137, 0.25);
+    padding: 26px 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px 0 0 8px;
+  }
+  
+  .page-num {
+    position: absolute;
+    bottom: 10px;
+    font-size: 0.75rem;
+    color: var(--pink);
+    font-family: 'Patrick Hand', cursive;
+    font-weight: bold;
+    background: var(--yellow-light);
+    padding: 2px 10px;
+    border-radius: 12px;
+    border: 1.5px dashed var(--pink);
+  }
+  
+  .front .page-num, .left-static.left .page-num {
+    left: 18px;
+  }
+  
+  .back .page-num, .left-static.right .page-num {
+    right: 18px;
+  }
+  
+  .controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    z-index: 2;
+    position: relative;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .btn {
+    background: linear-gradient(135deg, var(--pink), var(--coral));
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 10px rgba(255, 143, 177, 0.4);
+  }
+  
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 15px rgba(255, 143, 177, 0.6);
+  }
+  
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  .btn.secondary {
+    background: linear-gradient(135deg, var(--mint), var(--sky));
+    box-shadow: 0 4px 10px rgba(126, 217, 196, 0.4);
+  }
+  
+  .page-indicator {
+    color: var(--dark);
+    font-size: 0.95rem;
+    font-weight: 600;
+    min-width: 80px;
+    text-align: center;
+    background: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 2px solid var(--pink-light);
+  }
+  
+  /* COVER - Phong cách poster Trường Trần Bình Trọng */
+  .cover {
+    background: linear-gradient(180deg, #87ceeb 0%, #b8e5f5 45%, #e0f4fa 70%, #c8e8b8 85%, #a8d88a 100%) !important;
+    color: white;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    padding: 0 !important;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cover::before {
+    content: none;
+  }
+  
+  .cloud-deco {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+  
+  .cloud-deco.c1 { top: 8%; left: -5%; font-size: 3rem; }
+  .cloud-deco.c2 { top: 22%; right: -3%; font-size: 2.5rem; }
+  .cloud-deco.c3 { top: 3%; right: 15%; font-size: 2rem; }
+  
+  .heart-float {
+    position: absolute;
+    font-size: 1rem;
+    color: #ff8fb1;
+    pointer-events: none;
+    animation: heartFloat 3s ease-in-out infinite;
+  }
+  
+  @keyframes heartFloat {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+    50% { transform: translateY(-8px) scale(1.1); opacity: 1; }
+  }
+  
+  .heart-float.h1 { top: 35%; left: 8%; animation-delay: 0s; }
+  .heart-float.h2 { top: 45%; left: 15%; animation-delay: 0.5s; font-size: 0.7rem; }
+  .heart-float.h3 { top: 55%; left: 5%; animation-delay: 1s; font-size: 1.2rem; }
+  .heart-float.h4 { top: 30%; right: 10%; animation-delay: 1.5s; }
+  .heart-float.h5 { top: 50%; right: 18%; animation-delay: 2s; font-size: 0.8rem; }
+  .heart-float.h6 { top: 65%; right: 8%; animation-delay: 0.8s; font-size: 1.1rem; }
+  .heart-float.h7 { top: 40%; right: 5%; animation-delay: 2.5s; font-size: 0.6rem; }
+  
+  .school-name {
+    color: #1e5fa8;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
+    margin-top: 15px;
+    padding: 0 8px;
+    line-height: 1;
+    z-index: 10;
+    position: relative;
+    animation: titleSlide 1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  
+  .school-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+  }
+  
+  @keyframes titleSlide {
+    0% { transform: translateY(-20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  
+  .cover-illustration {
+    position: relative;
+    width: 100%;
+    margin-top: 8px;
+    z-index: 5;
+  }
+  
+  .cover-illustration svg {
+    width: 100%;
+    height: auto;
+    max-height: 230px;
+    display: block;
+  }
+  
+  .bubble-title {
+    position: relative;
+    z-index: 10;
+    margin-top: -15px;
+    padding: 0 10px;
+  }
+  
+  .bubble-title .line1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ff6b35;
+    text-shadow: 
+      2px 2px 0 white,
+      -1px -1px 0 white,
+      1px -1px 0 white,
+      -1px 1px 0 white,
+      3px 3px 0 rgba(255, 107, 53, 0.3);
+    transform: rotate(-5deg);
+    display: inline-block;
+    letter-spacing: 1px;
+  }
+  
+  .bubble-title .line2 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ff3838;
+    text-shadow: 
+      3px 3px 0 white,
+      -2px -2px 0 white,
+      2px -2px 0 white,
+      -2px 2px 0 white,
+      5px 5px 0 rgba(255, 56, 56, 0.25);
+    display: block;
+    letter-spacing: 2px;
+    margin: -3px 0;
+  }
+  
+  .bubble-title .line3 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #ff9a3c;
+    text-shadow:
+      2px 2px 0 white,
+      -1px -1px 0 white,
+      1px -1px 0 white,
+      -1px 1px 0 white,
+      3px 3px 0 rgba(255, 154, 60, 0.3);
+    transform: rotate(-3deg);
+    display: inline-block;
+    letter-spacing: 1px;
+    margin-top: -3px;
+  }
+  
+  .cover-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 20px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 10;
+  }
+  
+  .cover-subtitle-new {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.92rem;
+    color: #3d2d56;
+    background: rgba(255,255,255,0.8);
+    padding: 3px 14px;
+    border-radius: 15px;
+    border: 2px dashed #ff8fb1;
+  }
+  
+  .cover-author-new {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 0.9rem;
+    color: #1e5fa8;
+    font-weight: 700;
+    background: white;
+    padding: 4px 16px;
+    border-radius: 20px;
+    box-shadow: 0 3px 0 rgba(30, 95, 168, 0.2);
+    margin-top: 2px;
+  }
+  
+  .cover-year {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.78rem;
+    color: #ff6b35;
+    margin-top: 1px;
+  }
+  
+  /* Content pages */
+  .content {
+    background: var(--cream);
+    position: relative;
+  }
+  
+  .content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--pink), var(--yellow), var(--mint), var(--sky));
+  }
+  
+  .page-label {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    color: var(--pink);
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 4px;
+    margin-top: 3px;
+  }
+  
+  .content h2 {
+    font-size: 1.2rem;
+    color: var(--dark);
+    margin-bottom: 8px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  
+  .content h2 .emoji {
+    font-size: 1.4rem;
+    display: inline-block;
+    animation: bounce 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  .content p {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #4a3968;
+    margin-bottom: 6px;
+  }
+  
+  .content .narrator {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.9rem;
+    color: var(--coral);
+    font-style: italic;
+  }
+  
+  .dialogue {
+    background: var(--pink-light);
+    padding: 8px 12px;
+    border-radius: 15px 15px 15px 3px;
+    margin: 8px 0;
+    color: var(--dark);
+    position: relative;
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+  
+  .dialogue.grandpa {
+    background: var(--sky-light);
+    border-radius: 15px 15px 3px 15px;
+    margin-left: 18px;
+  }
+  
+  .dialogue .speaker {
+    font-weight: 700;
+    color: var(--pink);
+    display: block;
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+    font-family: 'Baloo 2', sans-serif;
+  }
+  
+  .dialogue.grandpa .speaker {
+    color: #4a9dbf;
+  }
+  
+  /* Image frame - now holding detailed SVG */
+  .image-frame {
+    margin: 8px auto;
+    width: 95%;
+    max-width: 320px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    border: 4px solid white;
+    position: relative;
+    transform: rotate(-1deg);
+    transition: transform 0.3s;
+    background: linear-gradient(180deg, #87ceeb 0%, #b0e0e6 100%);
+  }
+  
+  .image-frame:hover {
+    transform: rotate(0deg) scale(1.02);
+  }
+  
+  .image-frame.tilt-right {
+    transform: rotate(1deg);
+  }
+  
+  .image-frame.tilt-right:hover {
+    transform: rotate(0deg) scale(1.02);
+  }
+  
+  .image-frame svg {
+    display: block;
+    width: 100%;
+    height: 160px;
+  }
+  
+  .image-frame .caption {
+    background: white;
+    padding: 5px 10px;
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.78rem;
+    color: var(--dark);
+    text-align: center;
+    border-top: 2px dashed var(--pink-light);
+  }
+  
+  .fun-fact {
+    background: linear-gradient(135deg, var(--yellow-light), #fff);
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin: 8px 0;
+    border-left: 4px solid var(--yellow);
+    font-size: 0.78rem;
+    color: var(--dark);
+    line-height: 1.45;
+  }
+  
+  .fun-fact strong {
+    color: var(--coral);
+    display: block;
+    margin-bottom: 3px;
+    font-size: 0.82rem;
+  }
+  
+  .section-title {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 28px !important;
+  }
+  
+  .section-title.chapter1 {
+    background: linear-gradient(135deg, var(--pink-light), var(--yellow-light)) !important;
+  }
+  
+  .section-title.chapter2 {
+    background: linear-gradient(135deg, var(--mint-light), var(--sky-light)) !important;
+  }
+  
+  .section-title.chapter3 {
+    background: linear-gradient(135deg, var(--yellow-light), var(--pink-light)) !important;
+  }
+  
+  .section-title.chapter4 {
+    background: linear-gradient(135deg, var(--sky-light), var(--mint-light)) !important;
+  }
+  
+  .section-title .chapter-num {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.95rem;
+    letter-spacing: 3px;
+    color: var(--coral);
+    margin-bottom: 8px;
+  }
+  
+  .section-title h2 {
+    font-size: 1.7rem;
+    color: var(--dark);
+    margin-bottom: 12px;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+  
+  .section-title .big-emoji {
+    font-size: 3.5rem;
+    margin: 12px 0;
+    animation: pop 2s ease-in-out infinite;
+  }
+  
+  @keyframes pop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  .section-title p {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.95rem;
+    color: var(--dark);
+    max-width: 85%;
+    line-height: 1.5;
+  }
+  
+  .end-page {
+    background: linear-gradient(135deg, var(--coral), var(--pink), var(--purple)) !important;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .end-page::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border: 3px dashed white;
+    border-radius: 12px;
+    opacity: 0.6;
+  }
+  
+  .end-page h2 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+  }
+  
+  .end-page p {
+    color: white;
+    font-family: 'Patrick Hand', cursive;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 85%;
+    margin: 6px 0;
+  }
+  
+  .end-heart {
+    font-size: 2.8rem;
+    margin: 8px 0;
+    animation: heartbeat 1.3s ease-in-out infinite;
+  }
+  
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scale(1.2); }
+    60% { transform: scale(0.9); }
+  }
+  
+  .sparkle {
+    position: absolute;
+    font-size: 1.5rem;
+    pointer-events: none;
+    animation: sparkleAnim 1s ease-out forwards;
+    z-index: 100;
+  }
+  
+  @keyframes sparkleAnim {
+    0% { transform: translate(0,0) scale(0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg); opacity: 0; }
+  }
+  
+  .sound-toggle {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: white;
+    border: 2px solid var(--pink);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+    transition: all 0.3s;
+  }
+  
+  .sound-toggle:hover {
+    transform: scale(1.1);
+  }
+  
+  .intro-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #ff8fb1, #ffd93d, #7ed9c4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 1s;
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .intro-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .intro-overlay h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    text-shadow: 3px 3px 0 rgba(61, 45, 86, 0.3);
+    margin-bottom: 10px;
+  }
+  
+  .intro-overlay p {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 1.1rem;
+    margin: 10px 0;
+  }
+  
+  .start-btn {
+    background: white;
+    color: var(--pink);
+    border: none;
+    padding: 14px 40px;
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+    transition: all 0.2s;
+  }
+  
+  .start-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 0 rgba(0,0,0,0.15);
+  }
+  
+  .start-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+  }
+  
+  @media (max-width: 768px) {
+    .book-container { height: 500px; max-width: 100%; }
+    .cover-title { font-size: 1.3rem; }
+    .content h2 { font-size: 1rem; }
+    .content p { font-size: 0.75rem; }
+    .dialogue { font-size: 0.78rem; }
+    .page .front, .page .back, .left-static { padding: 18px 13px; }
+    .image-frame svg { height: 120px; }
+    .image-frame { max-width: 220px; }
+    .section-title h2 { font-size: 1.2rem; }
+    .section-title .big-emoji { font-size: 2.8rem; }
+    .btn { padding: 8px 16px; font-size: 0.8rem; }
+    .header h1 { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="floating-deco deco1">🌸</div>
+<div class="floating-deco deco2">⭐</div>
+<div class="floating-deco deco3">🎨</div>
+<div class="floating-deco deco4">✨</div>
+<div class="floating-deco deco5">🌈</div>
+<div class="floating-deco deco6">💖</div>
+
+<div class="intro-overlay" id="introOverlay">
+  <div style="font-size: 2.5rem; animation: bounce 1.5s ease-in-out infinite;">📖</div>
+  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: 800; color: white; letter-spacing: 1px; font-size: 0.95rem; text-shadow: 2px 2px 0 rgba(0,0,0,0.2);"><img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCACbAJwDASIAAhEBAxEB/8QAHQAAAQQDAQEAAAAAAAAAAAAAAAUGBwgDBAkCAf/EAEYQAAEDAwIDBAgDAgwFBQAAAAECAwQABREGIQcSMRNBUWEIFCIycYGRoSNCsVJyCRUkMzZidZKiwdHhJTSCsvE3c7PC8P/EABwBAAEFAQEBAAAAAAAAAAAAAAYAAwQFBwIIAf/EADwRAAEDAgQEBAQEBAQHAAAAAAECAxEABAUSITEGQVFhBxNxgSKRobEUMsHRFUJS8BaCsvEzQ2JyosLh/9oADAMBAAIRAxEAPwCmVFFFKlRRRRSpUUVtWq3XC7XBm3WqDKnzXiQ1HjNKdccIGSEpSCTsCdvCpb096MvFy7FCn7JEtLS2wtLk6a2OvQFKCpYPkUjHfVffYrY2Am6eSiepAJ9Bufau0oUv8omoaoqVNS+j3xcsTL0h7ST06O0rHaQHm5BX5pbQouEf9NRelh5UgRksuF4r5A2EnmKs4xjrnO2KctMQtL1BXbOpWB/SQY9Y2r4pKk6EUp6R0zftW3xmyactci5T3d0tMp90ZAKlE7JSMjKlEAZ3NWi0R6HjAQh7WurHFKKCFRbQ2EhKs7EPOA5GOo7MfHxmj0eOGULhnoGNBXHZN8mIS9dZKUjmU6RkN82TlCM8owcE5VgFRqSaxLibxHvHrhTOGqyNgkZtCVd9dh0jXvyqyZs0gSveoAleiXwvejtNty9SR1oHtONzGypz48zZH0AqHOKHoqat05Aduelri3qeMygrdjpYLMsAZJ5EZUHMAdxCidgk1eKih7D+Pcbs3AovFY5hWoPvuPY06u1bUNorksoFKilQIIOCD3V8q1Xpv8KoduKOJFii9imS8Gru02MI7RXuv47io+yrxJSepUTVWvQmCYuzjFki8Z0CuXQjce31GtVLiChRSeVFFFFW1cUUUUUqVFFFFKlRRRRSpUU4OHekbxrrWEDTFjaSuXMXjnWcIaQBlbiz3JSAT4noASQC36uN/B/aXjs6dv8ArJ1CVSpMkW5glHtNtISlxeFeClLRkeLQof4oxk4Nhjl0kSoaJ9ToPlv7U6w35iwmpt4Q8MdMcM9Ppt1jipXLcSDMuDqR28lW3U9ydtkDYeZJJe9FZY0d2Q5yNJye89wry+td3id1mVLjiz6kn+/lV0AlCegrFTF1Zwa0vq3W1m1mbcYt7tk5mWZUdIT612RBSh3uVjlThXvAJAzjapZh2tlkBTuHV+fQfKt8AAYAwK1jhrw5v2T+IuXy0SIyo1VB3BO3tCvnUF67QdAJpDas753ccQj4b1kRamFLUgSwpafeSAMj71DHpTcSLtYpEfSlhlOQ3X2e2lyGjhzlJICEn8vTJI33HnUC8OxcZes4iIWpW7DMcUSme++UJScZwpXn032NXX+EeHrRzyRblw8yVH9CB9qO8I4Ju8Qw04g8+G0kEgZZ0HMxt7SYq8hsqO6QofFNYXbO+N23EL+O1R03xCu+lLKXtZap0dODQw2u2uLekyfLsxygE+OQBWeHxMLOnU6z1LerbbrY+jnhWmHyvSXR3Baife8QAMd5qY9wTw2+mA0Unso6fMkUNjBsSKc6CFJJhJEkKPROkn7DnFbvFbRjmrtA3nTEhLbPr8ZTTbzrfaIac6oXjyUAflTB4Z+j1w40bb2xKs0bUVzLYS/MubKXUqVsSUNKyhsZG2xUAcFRpZ0xxZ4i6pfXcLDw3EyyJURzGTyOKA68q1EJUfIA1KFndiagtomNQ5dukdHY8lktuNq7wpJ/UbHuoevOD8RYslW+DXKi2SVZD8JJgDRQidhoYFc3+GP4cubtKZ2MKSrL2UASQfWtIbDAphcQ+D/D3XTEj+OtORG5z5KjcYbYYlBfLgLLiR7ZHgvmTsNjUhyozsZfK6nHge41hrJUrvcKuSElTbid9wRTEJcHUVzk4/cHr1wrviA4tVwsUtR9RuARjJ6lpwflcA+ShuOigmMK6g8VtH2/Xegrppq4oBTJZJZX3tOp3QseYUB8dwdia5jXGHIt9wkwJbZbkRnVMuoJ91aSQofUGvRHA/Eq8dsSXv8AitmFd52PvrPcVT3LXlLgbGteiiijWmKKKKKVKir1egfObk8GJMVOAuJd3kKGdyFIbWD8PaI+Rqm2ltEax1SkOac0vd7oyXeyL0aItbSV7bKcA5U9R1IxVofRF0HxX4d8Q3bZftJPR7LfY5TIkJksOpjuMgqbWooWoge0pONslYO/LQJx22xiGGrs23U+dIKU5hmJG4AmZgmO+lSbYlC8xGlWxgRFyneUbIHvK8KcMdlthsNtpwB96+RWER2UtIGw6nxNJWqtSW/T9uckvuJdeTshhCvaUru+A86c4V4VtuHbQvvQXYlSug6DsPqfYVHxHEmmUF15QSgdaULrcYNrhql3CS3HZT1Us9fIDvPkKjDUvFV9alMWGKGkdPWHxlR8wnoPnn4UxdTX+46gnmXPeKsfzbSdkNjwA/zpJUtKfeUB8TVHi/GFxcKLdp8Cev8AMf29te9Yzi/G1/iLv4fDElKTtAlZ/b21703eJ1ru+q7om8Kl+sy+QIWHCE5A6Y7h8KaEfRd5cXyuiOwO8rdB/TNSo0286nmZYecT4obUR9hWnKabytR5goe8noao0YpdoTCte5kn51rfAXiNxhhts3hF+lbbeiW3FMKUrMowlJJUhMa6FU9DpTCnaFmIKTDmx3hgc3OeQ5+9ZLToOWqQlVyfaQyDkpbJKleXlT3YZaVyqyrJOyeua3nG3mk8zsd5tP7Sm1AfUivhxO7KYB94qXxN4mcb27arDCnHHynMlbn4eFJUDBAKcySRrJA05Gaf+heIgskCNaJluZ9RYQG21RkhCkJHinoftUtWa62+8Q0y7dJQ+0e9J3SfAjqDVcLZa59zUU2+MuUodQ1hRHxAp0aasWuLNPTMt0CQ0r8yVAhKx4EUX4FiWNICQ8wpbZ55TI9Dz/vWsgwbi7GbZ7yr9tbgnUlJzj6a++vepxfabebLbiQpJpvXCGuK5+02fdVWU6hejW5Mm5WaewoJHacoQUg+RKgT9KV09nOhJUptaEupCuVYwpP+9WvF3B7WOWvmRldA+FX/AKnt9q1jDsZYdcLbapMAkEEGDz1Aps1zE40CGnivqf1AksG5Onf9sqyv/FzV0b4r6ig6G0hc7zdHwy3HaPKSd1KOyQPEk4wO84HfXMC8z3rrd5t0khIfmSFvuBI25lqKjjyyaFPC7CrmzRdOvpyyoJg9Uzm+UirC9cC3EhPIfeP2rUooorV6i0Va70WvR6t90tMDXeu45ksvlL9utTicNuN9UuvA+8lXUI90pwTzBXLUC8DtKs614s6d01JCFRZUvnlIUopC2W0l1xGU7gqQhQBHeRXTRtCG20ttoShCQEpSkYAA6ACss8SeJ38OQixtVZVrEqI3CdgB6mde3ep1myFnMrlXiLHYiRmosVlthhlAbaabSEoQkDASANgANsCnBYY/IyX1D2l7DyFIzSC46lsdVECnU2kIbShIwEjAoY8L8IF1fOXzokN7f9yufsJ+Yp69cypCRzpv3V+8Lu6LW48zFiSf5uQ2lXOQNygHOArHfXm32hldwuFvl6aitW9oI9WmF1Li5ORleRjmSQdsk7151NNLupbLZmcdoXfWnD3pSnOPr7X0pzV6BVcFSE+WYjeOZH9/MUE4fbWz9zdJeSHYISCvXLICikctJjbUGDJANQNrXSkiHqiTDtrQU0lhUr2lhIS2MZOT4Zpy8IdNtQ7hKcukRl2S5EYkIDrYUWeZTmAM9DgDNLHERpIur7w95VhlpPwCkH/Oliyf0vn/ANnRf1coMThlqMXVcJTrO3KSkkmPUT70Q4DwzY4HaOP2yIccCpMn8vmAgDWAIgadK01cStFtqKDd8FJwR6s7t/hrHqGDZNf6UkSbe12zqUq9VkFotqK09wKgDgnbwrW1rAgtaw0iy1CjIbVIeCkJaSARyDqMVq8XXX487TsKLMuEKO864hxNvUpKyAE4ASnr8MU/c3D/AJTyboJUhMJgAic2XmSYielFVvaW5dYNpmStUqkkEAJKtICRM5etLvDjSsXTtijhyI2m5LQFSHCAVhR6pB8B02p1EAjB6VFOlLi5adWzmjd75KhswFPGLc+YPOLG/sJVjuHl1pXPE6MJKYx0xqAPqTzpa9WHMU+IGc486escSs7e3Sg/ABpG+3cdaj32FXr9wpafjnWdt9dj0r7r+D6pqC0XK0RGW5jCXn1htsJU+lITlJIG+xOPOl/T2ozdZaY64Ko5XGTJbUHUrSpBJHd37VpyZTs2+WCU9EdiLdjyVdi776NkbHzpB0nJETs5JOOzsgUPj2i8fek0pSb2GjAWRpHZPvzr5dFAw4rfGraSZnlKu8aRSbr7WzzOrWGYqUOxYDgK0KGQ4rv/ANqlG0z49ztzE6KoKaeQFJ8vKq0T3S/NeeUclayT9ak/gbelKTJsby8hP4zIPh+Yf5/OqTC+JHX8WcYdV8CiQntG3zG/esC4Q4ndfxVxFwdHjI7EbD0jT5U/tSW9idBIfYbeSnHMhxIUCM53B8DvUc6r4a6B1TGcZvukbRLLiQgvCMlt9IBzhLqMLTv4KHf41LKkhSSk9CMGmtJbLT62z+U4oL8S7F2wvG8StVFGfQkEj4hsdOo+1bfZqC0lCuVUb9IX0bJWi7c/qjRsiTc7IzlcuK8AZERGPfBGO0QN87ApGM8wyoV1rrStKVoKFpCkqGCD0IrnJ6Teh4+g+LlxtkBCG7fLSmdDaR0abcJyjGAAApKwAOgxRD4fcXPYslVneGXECQf6htr3GmvMdwSWLtgNkKTsaVPQ0fSz6QlhbUgKL7MptJP5T6u4rP0SR866EVyr0ff52ltVWvUdsUBLt0puS2CpQSspIJQrlIJSoZSRncEiuneidS2rWGlLdqWyvF2DPZDreccyD0UhWCQFJIKSM7EGhnxWw51N2zegfAU5fQgk/UHT0NSLFYylNOWzI57gjbZIJpxUhafH8sWf6h/UUptzUruCoRYeQtKSsKPLykZxkYOaL/C63CcEK07qWon2gfpUPEX0IdAUd9B60yLA+blxZur5OURUFpHly4SfuTUg1GPC1faa1vq1e8px0/4xUnUcYcsuWbazzzH5qUf1oM4Pc860eeO63Fk/OPsKY3Eb/nnP7Emfq3SrZP6Xzv7Oi/q5SVxH/wCfX/Ykz9W6UrW8yxqye4+620gW6LlS1ADq541WAxfKJ/qH+lVacoE4ekD+k/6k141fbZ8zVOmpkWKp1iG+6qQsKSOQKSAOpyflSRxSfYi6p0lIkvNsstyXSta1AJSMJ3JNOl3VOmml8jmoLWlXgZaP9a1LzZdNazTFekvNz2opUUeryAUnOM5KT5Dvpy7t0vtuJt1grUUmCdPhy9NdhTdncqYcaVcoIQkKTIGvxBXXTc0gR5jWruIkGfaEFdvtCFh2Zy4S6tQI5E+IGc1vS/8A1kh/2Qv/AOSnIk2ewW9DPPDtsRsYSFKS2kfWmi7dLO9xIj3lu/WcxEQFRyTObCuYqz0z0pp1oMJT5iwVqWlR5dNh0AFOsum4UrykEIShSU8+p1PUkn7Uu37+ltm/9mT+iKja4XAQrXGR0L9qQn5BxZ/0qRLrIjydUWVyM+08gsyfabWFDojvFRBrRSgxZEg4CreM/wB9VRMSxAWDqroCcpJHrlRH1ih3ilTjXC91l0OQD5qWD9DTdJySfGl3h9OMDV9veBwlTobV5hW364pBratKyi6xFjql9BH94Vllq8pu4Q4NwQfrXl2xeLFy26ndKgfkas9SBfEcs4q/aANKL9ybjrZaW26tbiUkcoHft3n9K0tQj8ds/wBX/Oj/AMTLfPgJcI2Ukj7frXqbDrhtx4pSdRvSZVdPSYsOnbpr2HIuiWS+m2NoHMrB5e0dI/U1YokAEkgAdSa5++l1rFnUPGWWbXIKmLdGRBKkqBSpaVKUrGPArwfAgigbwiaUnGlXRRmQhBnpKoAH3PtT2MILrIaSqCT9qhipI4IcYtTcLLi7/F3LPtElYXLtr6yELVsOdB/IvAxzAEEYyDgYjepP9G3hi5xO4gNwZIWiyW9Ik3N0BQyjOEtBQ6KWcgbj2QsjJTg7JjSrJNg6q/ALQEqB/veduc7VHbCioBO9X29H/iXZOJ1oevVki3CM20sx3m5bPKUuABRAUCUq2IOx2yMgZp4Q/wALVz6Pw0rWDn8LHs9R7Xef/wBvitTTMWFZ0woFvisxIcdIZZYZQEobQBgAAbAClWeiNFvTcpx50OOe622MZwMHO+D8MZob8Mr+2ubB9u3QUJClQmZIBAIk/OqziRhYUw6T+VQJJ001B6a8vemFoNfqHFC7Q1+z2jzqUg945iofYCpOnTocFKVTJLbAWcJKzjNRXr8Oaf4kxby2khqSEOeRIwFD7D61It3KZdoZucT8RTGJDWPzJx7SfmkmijAspZ/Dq3bUpJ9yVJPoQr6Gg3h+5csU31mj87ayoTr8J5xpOgJieYps8RHEOSy42tK0KskwpUk5BGW6TdOXHSVwS5etQGJKmyFfhMuMl4sNJGEJwAQDgZPmaU7vaJxv8CbZrw3bYzzawytUYOpSV8qigAkAZ5cj51lu1p1LDiB6RrKY+VOJR+HGaYSnPeTyqwKh3OH3P41SkIzA7SEkHQCdVgyNRtWrWOO2f8LzPuBCkD4oKpGs6QhUpUMqgZmPetxrUGmkI5IVpmOp/Zj2h3H/AGAUh6iudlbZXcWLRcrFPZSVsTXIJYQ4ob9msjqFdMKFbzFn7N1LV8veo2lLOErNx/BWfAKQlOD5HFKytKMtjnt13u8N0jBX60p8L/eS7zA/avtxaX6kQtKQOUAfTWP/ACFO2OJ4WteZpaiRvMj2UCAde6TI5U2tO3azSmW7nMtc+/3J1IU/IYhF9thR37NOdkgf1fnS67qHTi0ck2zzmU/sv2d3H/YRSdqLRl+nIbUxqyctxHcpXYJHwDQA+tI0PTupUvmPG1bdJTqDhZZlKU0jyKlbZ8gCa+21niAGVKUxGpMfX4pnvJHeqzEeJMOauvKdbd7FOqT2Tz06ZBHTnW3fZ2jYzQu9jMOFcoqucJTHUwXk9FIIKQDkfcCmNqZl6cxYDHaKibYFEeA51VJNotOppTDpZ1lNZW04WyVsNPoUR3glKc15gWW6L1K+7d723co7DCUvrTFDIwCVBBwcHrk/Kob2BuXj3k3CClB/NlygcjP5lamANq44hvLPEuH3Ldl6S6ITOYq32goSABqSZ0EnWo5sGirveCr1fsglPvErG3y605Rw5XajFlzJiHFmQ2kNoycknxwPCpJ062VMOT1oCVylcyRj3UDZI+lYrp/K9QQIad0sAyHP0SP1q2tuGcItnYQwDHNRKjoO+m/QCsltuCrNmxQ86pSnFEBPIaq0MDXbUgk861LygO36I2hHaKaCcAN5Hjue76GvWrJsWGpLsuQ0w2lG6nFgD71txTBl3l1aO0L7R3KuVSemNupH2qunpwcO9Ta2srN50zJfkKtCV+s2tsnMpvY8yAD7S0YJCSMkKODnCVVfGzdndWjNhdu+WlxQEx7x0EmBJ2mtDwRtSHH7huDmUfSBp8+3+9ND0ifSStsS3ytNaClJmTnB2b1wRu0yCN+U/mV9s9ehSadOuLdcU66tS1rJUpSjkqJ6knxrzRVhhGD2mD2wtrRMJ3PMk9SeZ+nQCrRRUtWZRk0Vd70BLWzG4V3e6mMlEmbeFtl7vcabab5B8Apbv1NUhq7foBXePJ4Y3qzeslcuDdi8pog/htOtICDnpupt36HxFCviUF/wFeXbMmfSf3ipVnHmirHjY5FKl3QqdZUPtFQdRg7JCu/CgUnYjypLpSscrsniws+yvp5Gsz8NsfGE4qG3DCHYH+b+X9R707i1km9tVNHmP7+W9Iuu7G9f9GBQaWZ0PLrXMPaWB7w6DqN8YG4FIPCnWDbbQstzcCRn8JajsPI+VPNPrFtva1Ft99D2cbgqUkbk+JxnGD8vCo84q6RctsxV+tbahEdVzPJQP5lZ7/3T9j8q27Gg7hdx/EWE5kKELSOY5KHdO3p2msexdu7tnE4rZg+Yz8LgP8yRsT1BG/TQ8pqR4bEfEiwSx+GCXIxzjLZORynxSdvpWYxry20Y5cg3Bgjl/lAUhRHgcAg/QVD9i1vIYjtw7q2ZTDZy2sKKXGj4pUNx9xT5tGu4ykgCYiUj9h4dm6PmMpPz5au8Pxa0xNIVauBRO6ToqfTcd406E0sN4pwt5IS8S2QIBnUJ5JI2UBsnQmNwkzLnssGU2xIiz2mvVVHDTJc7UJHeMkDbwzXhbSrLIYUw44qA6sNrZWrm7In3SkncDO2POtmx3mFeGVuRFqy2cLQrqn6bfSvmpx/wOQe9PKofEKBqbmX52RYidx+vr3ou8q1GHC5tV5sgJSqddJOWRHw8suwGkaVhUhy8TX21vONwGFdmUNq5S8odckb8o6YFervBkGCzEtjbaGQrDjaV9lzJ8AQDjzr7pTezpWeq3XFH4lRrbuM5qEhBWlxxxw8rbbaeZSz5CvilKS7kSNuX612yyw/Ym4fVBcElXMA6hImdNhGx6EmtFqNeewTGa/i+3sgYHY8zikjyyAM/WsM1hplhqxQyS4+eZ9ROVcmfaUo+J6fOtkm9Tdglq2snvJDjp/8Aqn71swoUS2tOOAnmV7TrzqsqV5kmui5l3ieg69z/AL02mzD4hAUExBUvT4eYSnSJ2JhOnWBWWS8xAhLedUEMsoyfgKRbYiWbfKupaUZkz2m2wQFBA91O/lvWIunUcztDluzRVcxUrbt1Dv8A3RQvtLtdAwnthGaXzZ9pBT8CDjHh310hrICFb7n9v3qHc3/4pxLjQlOqW40zE6FY0OgEhJgzqdoNbViZ9Rtz8p1LiHFkkpXkfY7/AFpOUSpRUe80pXySFKEZBylHvb99JlebPEziAYpifkNmUNSP8x3+UAexo9wawTY2qWk1z+9MTRDGkOLL0yAwpq33tBmoH5Q8VfipHzIV/wBdQtVq/wCELKDddHj84ZlfTLVVUrZeFrty7we3ed1UUie8aT7xNRnEhKyB1NFSH6P/ABJkcMOIDF7Lb0i2PoMe5RmyMuMk55k525kkBQ6ZwU5AUTUeUVbXlozesLt3xKVCCK5SopMiurGmb7aNTWKJfLDPZn26WjnZfaOyh0II6gg5BScEEEEAilKuYnDfiTrLh7OMjTF5djNLVzPRF/iR3unvNnbOABzDCsdCKnOzemJfWo6UXfR1vkvAe07GlLaBP7pCv1rDcU8LcRZdJslhaOUmFD15e8+wqxRfpj4hV5LfKEtgtKUESEpIQsjONuorTY5rcw+3dVpXFJ5EII5y4CMqJ23GPLx653q/wR9IrUPEfirb9ONachW6App52Q4mQpbiQhBKSNgPe5Rjz8qtM1Ii3FoMTkJ5x7qun0Pca0PAOInMOWjB8cUA6UghUyCJIAJ5K09D1k1S4jh6rkfibbRSZgHYz1A3H7CdKjnW/DlxBcuOmx27GSVxQcqR48viPLr8ajhbbiHS0tCkuA4KSMEHwqxUWHItLDy0O9ohKeVpGSU9feUOg8TjzPgBoyoOntSrQudACJY5sOpTyrHKce9/kak4rwMzcO+daKypnURp3jp6belZVi3CTFysKYIZdVrkP5TrGhG2vL5QKw8K7Gq0afS89n1iUAtWT0T3ClXXLpY0nPdScFLYI/vCiOxdo7STCusWax0QJKMHH76Ov0rS1OzfrpYpVuFrYC3k4C0SgR1z0IFGjbIZCQ0RCYjtG2+9FWRNngi7FppYV5agITmkkHWUZhqTOpFZuHUhUrScV9RJUorJz+8a37804Gmp7CSp6Ior5R+ZB94fTf5Ui6OiX6zWCPbV2tlTjecrVKAG5z3A0pvN3d4hEu5xICVfljp5lkfvL/0pxvOpQdWRJ1PvvoKcsHVHB2rZxtecISD8OWFACDK8okETuayXDUFrhRkPOyAouJCm20e0tWemBSZ6rctQKD11SqBbE+0I2cLcHis9w8qz2y32W2h1y3RhKktp5lOKOVHv2VjH0r1Gbucp5SipTSA7zpVtyEeXfUhIQ3Jb07nf2HL1pp5VzeFCLw5gf+W3JSY/rUYkf9IgcjNfBckrmNwLcy2WG8o5AQArA8COg8v/ADvS3Wbex2TCAlxXQA55f9vKkXWWrtNaHtnrl1mR7fHW6EKfc2bQpRwOY925+ArQtt9tV6jIn267Qp7Dw5kPMPpcSoeIIOKy7jrjBdna+ThyCSqQVgEpHI67FX29dKLMIw5SFFd0sFXIaDKOg5x963SSSSTkmvi1JQgrWoJSkZJPQCkm/am09YYTky8XmDBYbGVrefSkAfWqr+kP6SrNygP6a4fuuBp0KRJuWCk46Yb78/1unTGc7Y9gHB+JY08IQUt81kQI5xP5j2HvA1q+fvG2xCTJ6fv0qOPS61y1rHim9GhO9pAtCTFbOBguZ/EI7+5I+KTUN0UV6atbZu0YQw0ISgAD0AgVUCee9FFFFP19oooopUql/wBDy8MWjj3ZEyXGmmpzb0PncXygKW2SgDzUtKUgd5VXQuuT1qny7XdIlzt76o8yI8h+O6nGW3EKCkqGe8EA10h4F8T7PxP0czcojrTV1YQlFzgg4VHdx1AJyW1YJSrfI26hQGK+KeCvF1vEmxKYyq7QSQT2Mx7DrVjYugAoNSZEuL7A5Ffit/sq/wBa20rtclLo5RHcdQUKOMbHr5f+KSKKEcD4+xjCAG0rzoHJWvyO/wBSO1OXOHsXI+NNbqrG+CFxZyVjnCySnGVd5JB7/h4Vuxo9zYbitrf7YpcV2qirqnu+1IT8puGwuS8+GW0DKllWABVV9X+lpPgcV48SxOtS9IR3kMzXSgqcdTzYcW0rI6Dp3EjwINbFw5x3d4+2sptNECSZEE/0jQfEeQ26kUNq4ftLNyWlEE8gT1BnUnp9wKuXco0qQ2gMvltQzkpWpI8ulJf8QOuFKp01K+VHIVHKiQTk7k7eHwrTg3f+MILE6FcBJiyG0usvNO8yHEKGUqSRsQQcgivq1rWcrUpR8zmh9/xgQwChi2MjqQP0NSn+GLa6X5j2vuYpTjotNsVzslTjoBGQonr9vD6VhmXN98FKPw0eAO5+daNFAGOeIGMYuCgryIPJOk+p3+w7VcWmG21okJaSAKhL013mkcCbi0sgLckx+TPU4dTnHyqgrLzrDgcZdW2sdFIUQftVlfTm4gRbzfIOirc4h1q2r9YlLG+HSkhKQc/sqJO3enB61Wetp4Iw13DsFZbeELMqI6ZjI+kT3qvdWHHFKG0//K9OuOOrK3VqWs9VKOSa80UUWVxRRRRSpUUUUUqVFFFFKlRSvpLUt+0lemrzpy6SLbPbGA6yrqnYlKgdlJOB7JBGw2pIorlaEuJKVCQeRpVanQ/pgXBhhMfWWmG5ikg/yq3OdmpXTGW15GeuSFD4U4rl6YemhEcNu0nd1yeU9mJDjaUFXcCUkkDzx8qppRQsvgbh9xzzFWonsVAfIKA+lOee9EBZ+n7TUr8WuPOt+ILbkF59FqtKwUmHFJ9sEDIWvqrv8NiQc1FFFFEtvbs2zQaZSEpGwAAA9hTQEa1N3o9ekBduGzQsV4jvXfTRUVIZQoB6IonJLROxSdyUHAycgjfNudK8bOF2o4rb0PWNsjLWeXsJzojOhXhyuYz16jI865sUUI45wHhWMOl9QKHDuUwJ9QQR7iD1NSG7lxsQDpXT6+8SdA2NIN01fZYxIylKpiOZQ8gDvVeONnpTRXYL9m4eNuLW6goXcnkcobzt7CCMk9eu3TqMiqkUUzg3h7hGGOh8guLG2aCB3AAAn1ntrXLtw66Mqjp20rJJeekyHJEh1x551ZW444oqUtROSSTuST31jooo6pqiiiilSoooopUq/9k=" style="width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">TRƯỜNG TIỂU HỌC TRẦN BÌNH TRỌNG</div>
+  <h1>Một ngày ở Phường Chợ Quán</h1>
+  <p>Hành trình khám phá cùng bé Huy và ông nội</p>
+  <p style="font-size: 0.9rem; opacity: 0.9;">— Bài dự thi Digital Flipbook, khối Năm 4 —</p>
+  <button class="start-btn" onclick="startBook()">🚀 Bắt đầu đọc</button>
+</div>
+
+<button class="sound-toggle" id="soundBtn" onclick="toggleSound()" title="Bật/tắt nhạc">🔊</button>
+
+<div class="header">
+  <h1>✨ Một ngày ở Phường Chợ Quán ✨</h1>
+  <p style="display: inline-flex; align-items: center; gap: 6px; justify-content: center;"><img src="data:image/png;base64,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" style="width: 20px; height: 20px; border-radius: 50%; vertical-align: middle;"> Trường Tiểu học Trần Bình Trọng • Khối Năm 4</p>
+</div>
+
+<div class="book-container">
+  <div class="book" id="book">
+    <div class="left-static left" id="leftPage"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="prevBtn" onclick="prevPage()">◄ Trước</button>
+  <span class="page-indicator" id="pageIndicator">1 / 20</span>
+  <button class="btn" id="nextBtn" onclick="nextPage()">Sau ►</button>
+  <button class="btn secondary" onclick="firstPage()">🏠 Trang đầu</button>
+</div>
+
+<script>
+// ===== SVG ILLUSTRATIONS (detailed scenes) =====
+
+// SVG: Bản đồ phường Chợ Quán
+const svgMap = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#87ceeb"/>
+      <stop offset="100%" stop-color="#b0e0e6"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#skyGrad)"/>
+  <!-- Clouds -->
+  <ellipse cx="40" cy="25" rx="20" ry="8" fill="white" opacity="0.85"/>
+  <ellipse cx="55" cy="22" rx="15" ry="7" fill="white" opacity="0.85"/>
+  <ellipse cx="260" cy="30" rx="22" ry="9" fill="white" opacity="0.85"/>
+  <ellipse cx="275" cy="28" rx="16" ry="7" fill="white" opacity="0.85"/>
+  <!-- Sun -->
+  <circle cx="285" cy="40" r="15" fill="#ffd93d"/>
+  <circle cx="285" cy="40" r="10" fill="#ffed4e"/>
+  <!-- Ground/district -->
+  <rect x="0" y="100" width="320" height="60" fill="#a8d8a8"/>
+  <!-- River (Tàu Hủ canal) -->
+  <path d="M 0 155 Q 80 145 160 152 T 320 150 L 320 160 L 0 160 Z" fill="#4a90e2"/>
+  <!-- District boundary (dashed) -->
+  <rect x="60" y="60" width="200" height="65" fill="#ffd93d" fill-opacity="0.3" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="5,3" rx="8"/>
+  <!-- Buildings inside -->
+  <rect x="80" y="75" width="20" height="35" fill="#ff9a76"/>
+  <polygon points="80,75 90,65 100,75" fill="#c0392b"/>
+  <rect x="110" y="80" width="25" height="30" fill="#b19cd9"/>
+  <polygon points="110,80 122,70 135,80" fill="#8b4f91"/>
+  <rect x="145" y="70" width="30" height="40" fill="#7ed9c4"/>
+  <polygon points="145,70 160,58 175,70" fill="#3d9c8a"/>
+  <rect x="185" y="78" width="22" height="32" fill="#ffd93d"/>
+  <polygon points="185,78 196,68 207,78" fill="#d4a017"/>
+  <rect x="217" y="82" width="28" height="28" fill="#ff8fb1"/>
+  <polygon points="217,82 231,72 245,82" fill="#c94970"/>
+  <!-- Roads -->
+  <line x1="0" y1="115" x2="320" y2="115" stroke="#555" stroke-width="2" stroke-dasharray="8,4"/>
+  <!-- Pin marker -->
+  <g transform="translate(160, 48)">
+    <path d="M 0 0 C -8 -8, -8 -22, 0 -22 C 8 -22, 8 -8, 0 0 Z" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
+    <circle cx="0" cy="-13" r="4" fill="white"/>
+  </g>
+  <!-- Label -->
+  <rect x="120" y="132" width="80" height="16" fill="white" rx="8" stroke="#ff6b6b" stroke-width="1"/>
+  <text x="160" y="143" text-anchor="middle" font-size="10" fill="#3d2d56" font-family="Arial, sans-serif" font-weight="bold">Phường Chợ Quán</text>
+  <!-- Trees -->
+  <circle cx="30" cy="115" r="8" fill="#4a7c4a"/>
+  <rect x="28" y="115" width="4" height="8" fill="#8b6e4d"/>
+  <circle cx="295" cy="115" r="8" fill="#4a7c4a"/>
+  <rect x="293" y="115" width="4" height="8" fill="#8b6e4d"/>
+</svg>`;
+
+// SVG: Nhà thờ Chợ Quán
+const svgChurch = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="churchSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd1dc"/>
+      <stop offset="100%" stop-color="#ffeef2"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#churchSky)"/>
+  <!-- Sun -->
+  <circle cx="270" cy="35" r="18" fill="#ffd93d" opacity="0.85"/>
+  <!-- Clouds -->
+  <ellipse cx="50" cy="28" rx="22" ry="8" fill="white" opacity="0.9"/>
+  <ellipse cx="65" cy="25" rx="15" ry="7" fill="white" opacity="0.9"/>
+  <!-- Trees background -->
+  <circle cx="35" cy="110" r="22" fill="#7ab87a"/>
+  <circle cx="55" cy="105" r="20" fill="#5ca85c"/>
+  <circle cx="285" cy="110" r="22" fill="#7ab87a"/>
+  <circle cx="265" cy="105" r="20" fill="#5ca85c"/>
+  <!-- Ground -->
+  <rect x="0" y="140" width="320" height="20" fill="#c4a57b"/>
+  <rect x="0" y="138" width="320" height="3" fill="#a88860"/>
+  <!-- Church body (pink color, like real one) -->
+  <rect x="95" y="70" width="130" height="72" fill="#f7c5c5" stroke="#c98a8a" stroke-width="1"/>
+  <!-- Church front facade -->
+  <rect x="130" y="55" width="60" height="87" fill="#f7c5c5" stroke="#c98a8a" stroke-width="1"/>
+  <!-- Roof -->
+  <polygon points="95,70 160,45 225,70" fill="#c84848" stroke="#8b2e2e" stroke-width="1"/>
+  <polygon points="130,55 160,35 190,55" fill="#c84848" stroke="#8b2e2e" stroke-width="1"/>
+  <!-- Bell tower (the iconic tall tower) -->
+  <rect x="150" y="12" width="20" height="43" fill="#f5b8b8" stroke="#c98a8a" stroke-width="1"/>
+  <polygon points="150,12 160,2 170,12" fill="#c84848" stroke="#8b2e2e" stroke-width="1"/>
+  <!-- Cross on top -->
+  <rect x="159" y="-8" width="2" height="12" fill="#5c3d24"/>
+  <rect x="155" y="-4" width="10" height="2" fill="#5c3d24"/>
+  <!-- Bell window -->
+  <rect x="155" y="22" width="10" height="14" fill="#3d2d56" rx="5"/>
+  <!-- Main entrance (arch door) -->
+  <path d="M 152 142 L 152 115 Q 152 105 160 105 Q 168 105 168 115 L 168 142 Z" fill="#5c3d24" stroke="#3d2817" stroke-width="1"/>
+  <!-- Windows (gothic arch windows) -->
+  <path d="M 105 130 L 105 105 Q 105 95 112 95 Q 119 95 119 105 L 119 130 Z" fill="#d4c4a8" stroke="#8b6e4d" stroke-width="0.5"/>
+  <path d="M 125 130 L 125 105 Q 125 95 132 95 Q 139 95 139 105 L 139 130 Z" fill="#d4c4a8" stroke="#8b6e4d" stroke-width="0.5"/>
+  <line x1="112" y1="95" x2="112" y2="130" stroke="#8b6e4d" stroke-width="0.3"/>
+  <line x1="105" y1="115" x2="119" y2="115" stroke="#8b6e4d" stroke-width="0.3"/>
+  <line x1="132" y1="95" x2="132" y2="130" stroke="#8b6e4d" stroke-width="0.3"/>
+  <line x1="125" y1="115" x2="139" y2="115" stroke="#8b6e4d" stroke-width="0.3"/>
+  <path d="M 181 130 L 181 105 Q 181 95 188 95 Q 195 95 195 105 L 195 130 Z" fill="#d4c4a8" stroke="#8b6e4d" stroke-width="0.5"/>
+  <path d="M 201 130 L 201 105 Q 201 95 208 95 Q 215 95 215 105 L 215 130 Z" fill="#d4c4a8" stroke="#8b6e4d" stroke-width="0.5"/>
+  <line x1="188" y1="95" x2="188" y2="130" stroke="#8b6e4d" stroke-width="0.3"/>
+  <line x1="181" y1="115" x2="195" y2="115" stroke="#8b6e4d" stroke-width="0.3"/>
+  <line x1="208" y1="95" x2="208" y2="130" stroke="#8b6e4d" stroke-width="0.3"/>
+  <line x1="201" y1="115" x2="215" y2="115" stroke="#8b6e4d" stroke-width="0.3"/>
+  <!-- Rose window -->
+  <circle cx="160" cy="75" r="8" fill="#d4a574" stroke="#8b6e4d" stroke-width="1"/>
+  <circle cx="160" cy="75" r="5" fill="#c98a8a"/>
+  <!-- Little people -->
+  <circle cx="80" cy="150" r="2" fill="#ff9a76"/>
+  <rect x="79" y="152" width="2" height="6" fill="#b19cd9"/>
+  <circle cx="240" cy="148" r="2" fill="#ffd93d"/>
+  <rect x="239" y="150" width="2" height="6" fill="#87ceeb"/>
+</svg>`;
+
+// SVG: Bệnh viện Bệnh Nhiệt đới
+const svgHospital = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hospSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c8f0e4"/>
+      <stop offset="100%" stop-color="#e0f7fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#hospSky)"/>
+  <!-- Clouds -->
+  <ellipse cx="40" cy="25" rx="22" ry="8" fill="white" opacity="0.9"/>
+  <ellipse cx="55" cy="22" rx="16" ry="7" fill="white" opacity="0.9"/>
+  <ellipse cx="260" cy="28" rx="25" ry="9" fill="white" opacity="0.9"/>
+  <!-- Ground -->
+  <rect x="0" y="140" width="320" height="20" fill="#a8d8a8"/>
+  <!-- Road -->
+  <rect x="0" y="135" width="320" height="8" fill="#888"/>
+  <line x1="0" y1="139" x2="320" y2="139" stroke="#fff" stroke-width="1" stroke-dasharray="10,5"/>
+  <!-- Trees -->
+  <circle cx="25" cy="115" r="15" fill="#4a9c4a"/>
+  <rect x="23" y="115" width="4" height="15" fill="#8b6e4d"/>
+  <circle cx="300" cy="115" r="15" fill="#4a9c4a"/>
+  <rect x="298" y="115" width="4" height="15" fill="#8b6e4d"/>
+  <!-- Main hospital building (colonial style) -->
+  <rect x="60" y="55" width="200" height="80" fill="#fff4c2" stroke="#c9a96e" stroke-width="1.5"/>
+  <!-- Roof tiled -->
+  <rect x="55" y="50" width="210" height="8" fill="#c84848"/>
+  <rect x="55" y="48" width="210" height="3" fill="#a83838"/>
+  <!-- Central entrance -->
+  <rect x="140" y="40" width="40" height="95" fill="#fff8e4" stroke="#c9a96e" stroke-width="1.5"/>
+  <polygon points="140,40 160,28 180,40" fill="#c84848" stroke="#a83838" stroke-width="1"/>
+  <!-- Columns on entrance -->
+  <rect x="144" y="85" width="4" height="50" fill="#d4c4a8"/>
+  <rect x="172" y="85" width="4" height="50" fill="#d4c4a8"/>
+  <!-- Entrance door -->
+  <rect x="152" y="105" width="16" height="30" fill="#5c3d24" stroke="#3d2817" stroke-width="0.5"/>
+  <circle cx="165" cy="120" r="0.8" fill="#d4a574"/>
+  <!-- Windows (arched) -->
+  <g fill="#87ceeb" stroke="#4a7a8a" stroke-width="0.5">
+    <path d="M 75 90 L 75 75 Q 75 68 82 68 Q 89 68 89 75 L 89 90 Z"/>
+    <path d="M 95 90 L 95 75 Q 95 68 102 68 Q 109 68 109 75 L 109 90 Z"/>
+    <path d="M 115 90 L 115 75 Q 115 68 122 68 Q 129 68 129 75 L 129 90 Z"/>
+    <path d="M 191 90 L 191 75 Q 191 68 198 68 Q 205 68 205 75 L 205 90 Z"/>
+    <path d="M 211 90 L 211 75 Q 211 68 218 68 Q 225 68 225 75 L 225 90 Z"/>
+    <path d="M 231 90 L 231 75 Q 231 68 238 68 Q 245 68 245 75 L 245 90 Z"/>
+  </g>
+  <!-- Lower windows -->
+  <g fill="#87ceeb" stroke="#4a7a8a" stroke-width="0.5">
+    <rect x="75" y="105" width="14" height="18"/>
+    <rect x="95" y="105" width="14" height="18"/>
+    <rect x="115" y="105" width="14" height="18"/>
+    <rect x="191" y="105" width="14" height="18"/>
+    <rect x="211" y="105" width="14" height="18"/>
+    <rect x="231" y="105" width="14" height="18"/>
+  </g>
+  <!-- Red cross sign -->
+  <rect x="155" y="50" width="10" height="10" fill="white" stroke="#c98a8a" stroke-width="0.5"/>
+  <rect x="159" y="52" width="2" height="6" fill="#e74c3c"/>
+  <rect x="157" y="54" width="6" height="2" fill="#e74c3c"/>
+  <!-- Sign board -->
+  <rect x="130" y="72" width="60" height="8" fill="#4a6a8a" rx="2"/>
+  <text x="160" y="78.5" text-anchor="middle" font-size="5" fill="white" font-family="Arial" font-weight="bold">BỆNH VIỆN</text>
+</svg>`;
+
+// SVG: Trường Lê Hồng Phong (French colonial architecture)
+const svgSchool1 = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="schoolSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd1dc"/>
+      <stop offset="100%" stop-color="#ffeef2"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#schoolSky)"/>
+  <!-- Sun -->
+  <circle cx="40" cy="30" r="16" fill="#ffd93d" opacity="0.8"/>
+  <circle cx="40" cy="30" r="10" fill="#fff4c2" opacity="0.9"/>
+  <!-- Clouds -->
+  <ellipse cx="240" cy="28" rx="22" ry="8" fill="white" opacity="0.9"/>
+  <ellipse cx="255" cy="25" rx="16" ry="7" fill="white" opacity="0.9"/>
+  <!-- Ground -->
+  <rect x="0" y="140" width="320" height="20" fill="#a8d8a8"/>
+  <!-- Large colonial school building - main yellow wall -->
+  <rect x="40" y="70" width="240" height="68" fill="#f5d97c" stroke="#c9a94e" stroke-width="1"/>
+  <!-- Red tile roof -->
+  <polygon points="40,70 35,62 285,62 280,70" fill="#c84848" stroke="#8b2e2e" stroke-width="1"/>
+  <!-- Central tower -->
+  <rect x="140" y="40" width="40" height="98" fill="#f5d97c" stroke="#c9a94e" stroke-width="1"/>
+  <polygon points="140,40 130,30 160,15 190,30 180,40" fill="#c84848" stroke="#8b2e2e" stroke-width="1"/>
+  <!-- Clock on tower -->
+  <circle cx="160" cy="55" r="8" fill="white" stroke="#5c3d24" stroke-width="1"/>
+  <line x1="160" y1="55" x2="160" y2="50" stroke="#5c3d24" stroke-width="1"/>
+  <line x1="160" y1="55" x2="164" y2="55" stroke="#5c3d24" stroke-width="1"/>
+  <!-- Windows - top row -->
+  <g fill="#87ceeb" stroke="#4a6a8a" stroke-width="0.5">
+    <rect x="52" y="78" width="14" height="20"/>
+    <rect x="72" y="78" width="14" height="20"/>
+    <rect x="92" y="78" width="14" height="20"/>
+    <rect x="112" y="78" width="14" height="20"/>
+    <rect x="194" y="78" width="14" height="20"/>
+    <rect x="214" y="78" width="14" height="20"/>
+    <rect x="234" y="78" width="14" height="20"/>
+    <rect x="254" y="78" width="14" height="20"/>
+  </g>
+  <!-- Window frames cross -->
+  <g stroke="#fff" stroke-width="0.5">
+    <line x1="59" y1="78" x2="59" y2="98"/>
+    <line x1="79" y1="78" x2="79" y2="98"/>
+    <line x1="99" y1="78" x2="99" y2="98"/>
+    <line x1="119" y1="78" x2="119" y2="98"/>
+    <line x1="201" y1="78" x2="201" y2="98"/>
+    <line x1="221" y1="78" x2="221" y2="98"/>
+    <line x1="241" y1="78" x2="241" y2="98"/>
+    <line x1="261" y1="78" x2="261" y2="98"/>
+  </g>
+  <!-- Windows - bottom row -->
+  <g fill="#87ceeb" stroke="#4a6a8a" stroke-width="0.5">
+    <rect x="52" y="108" width="14" height="20"/>
+    <rect x="72" y="108" width="14" height="20"/>
+    <rect x="92" y="108" width="14" height="20"/>
+    <rect x="112" y="108" width="14" height="20"/>
+    <rect x="194" y="108" width="14" height="20"/>
+    <rect x="214" y="108" width="14" height="20"/>
+    <rect x="234" y="108" width="14" height="20"/>
+    <rect x="254" y="108" width="14" height="20"/>
+  </g>
+  <!-- Tower windows -->
+  <rect x="148" y="75" width="10" height="15" fill="#87ceeb" stroke="#4a6a8a" stroke-width="0.5"/>
+  <rect x="162" y="75" width="10" height="15" fill="#87ceeb" stroke="#4a6a8a" stroke-width="0.5"/>
+  <rect x="148" y="95" width="10" height="15" fill="#87ceeb" stroke="#4a6a8a" stroke-width="0.5"/>
+  <rect x="162" y="95" width="10" height="15" fill="#87ceeb" stroke="#4a6a8a" stroke-width="0.5"/>
+  <!-- Main entrance -->
+  <path d="M 150 138 L 150 115 Q 150 110 155 110 L 165 110 Q 170 110 170 115 L 170 138 Z" fill="#5c3d24" stroke="#3d2817" stroke-width="1"/>
+  <!-- Gate/fence -->
+  <g stroke="#3d2d56" stroke-width="1.2" fill="none">
+    <line x1="35" y1="138" x2="35" y2="148"/>
+    <line x1="50" y1="138" x2="50" y2="148"/>
+    <line x1="65" y1="138" x2="65" y2="148"/>
+    <line x1="255" y1="138" x2="255" y2="148"/>
+    <line x1="270" y1="138" x2="270" y2="148"/>
+    <line x1="285" y1="138" x2="285" y2="148"/>
+  </g>
+  <!-- Sign -->
+  <rect x="110" y="47" width="100" height="11" fill="#3d2d56" rx="2"/>
+  <text x="160" y="55" text-anchor="middle" font-size="7" fill="white" font-family="Arial" font-weight="bold">LÊ HỒNG PHONG</text>
+  <!-- Students -->
+  <g>
+    <circle cx="90" cy="145" r="2.5" fill="#ff9a76"/>
+    <rect x="88.5" y="147" width="3" height="7" fill="#ffd93d"/>
+    <circle cx="230" cy="145" r="2.5" fill="#b19cd9"/>
+    <rect x="228.5" y="147" width="3" height="7" fill="#87ceeb"/>
+  </g>
+</svg>`;
+
+// SVG: Đại học Sài Gòn
+const svgSchool2 = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="univSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4f1f9"/>
+      <stop offset="100%" stop-color="#e0f7fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#univSky)"/>
+  <circle cx="275" cy="32" r="15" fill="#ffd93d" opacity="0.85"/>
+  <ellipse cx="45" cy="28" rx="20" ry="7" fill="white" opacity="0.9"/>
+  <ellipse cx="60" cy="25" rx="14" ry="6" fill="white" opacity="0.9"/>
+  <!-- Ground -->
+  <rect x="0" y="140" width="320" height="20" fill="#a8d8a8"/>
+  <!-- Building main - Asian-European mix -->
+  <rect x="30" y="75" width="260" height="63" fill="#e8d9b8" stroke="#8b6e4d" stroke-width="1"/>
+  <!-- Second floor -->
+  <rect x="45" y="50" width="230" height="28" fill="#f5e6c8" stroke="#8b6e4d" stroke-width="1"/>
+  <!-- Roof with Asian curve -->
+  <path d="M 25 50 L 25 45 Q 160 20 295 45 L 295 50 Z" fill="#8b2e2e"/>
+  <path d="M 25 45 Q 160 20 295 45" fill="none" stroke="#5c1a1a" stroke-width="1"/>
+  <!-- Decorative roof ends -->
+  <path d="M 20 45 Q 15 42 12 48" fill="none" stroke="#8b2e2e" stroke-width="2"/>
+  <path d="M 300 45 Q 305 42 308 48" fill="none" stroke="#8b2e2e" stroke-width="2"/>
+  <!-- Central decorative element -->
+  <polygon points="155,35 160,25 165,35" fill="#d4a574"/>
+  <circle cx="160" cy="32" r="2" fill="#8b6e4d"/>
+  <!-- Upper floor windows -->
+  <g fill="#87ceeb" stroke="#5c3d24" stroke-width="0.5">
+    <rect x="55" y="58" width="12" height="15"/>
+    <rect x="72" y="58" width="12" height="15"/>
+    <rect x="89" y="58" width="12" height="15"/>
+    <rect x="106" y="58" width="12" height="15"/>
+    <rect x="123" y="58" width="12" height="15"/>
+    <rect x="185" y="58" width="12" height="15"/>
+    <rect x="202" y="58" width="12" height="15"/>
+    <rect x="219" y="58" width="12" height="15"/>
+    <rect x="236" y="58" width="12" height="15"/>
+    <rect x="253" y="58" width="12" height="15"/>
+  </g>
+  <!-- Center entrance pediment -->
+  <polygon points="140,75 160,60 180,75" fill="#e8d9b8" stroke="#8b6e4d" stroke-width="1"/>
+  <!-- Lower floor - arched windows -->
+  <g fill="#87ceeb" stroke="#5c3d24" stroke-width="0.5">
+    <path d="M 40 120 L 40 95 Q 40 85 50 85 Q 60 85 60 95 L 60 120 Z"/>
+    <path d="M 70 120 L 70 95 Q 70 85 80 85 Q 90 85 90 95 L 90 120 Z"/>
+    <path d="M 100 120 L 100 95 Q 100 85 110 85 Q 120 85 120 95 L 120 120 Z"/>
+    <path d="M 200 120 L 200 95 Q 200 85 210 85 Q 220 85 220 95 L 220 120 Z"/>
+    <path d="M 230 120 L 230 95 Q 230 85 240 85 Q 250 85 250 95 L 250 120 Z"/>
+    <path d="M 260 120 L 260 95 Q 260 85 270 85 Q 280 85 280 95 L 280 120 Z"/>
+  </g>
+  <!-- Main entrance -->
+  <path d="M 145 138 L 145 105 Q 145 95 155 95 L 165 95 Q 175 95 175 105 L 175 138 Z" fill="#5c3d24" stroke="#3d2817" stroke-width="1"/>
+  <!-- Columns flanking entrance -->
+  <rect x="135" y="95" width="4" height="43" fill="#c9a96e"/>
+  <rect x="181" y="95" width="4" height="43" fill="#c9a96e"/>
+  <!-- Steps -->
+  <rect x="130" y="136" width="60" height="2" fill="#a88860"/>
+  <rect x="125" y="138" width="70" height="2" fill="#8b6e4d"/>
+  <!-- Trees -->
+  <circle cx="15" cy="130" r="12" fill="#5ca85c"/>
+  <rect x="13" y="130" width="4" height="12" fill="#8b6e4d"/>
+  <circle cx="305" cy="130" r="12" fill="#5ca85c"/>
+  <rect x="303" y="130" width="4" height="12" fill="#8b6e4d"/>
+</svg>`;
+
+// SVG: Chợ Hòa Bình (busy market)
+const svgMarket = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="marketSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd1dc"/>
+      <stop offset="100%" stop-color="#fff4c2"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#marketSky)"/>
+  <ellipse cx="50" cy="22" rx="20" ry="7" fill="white" opacity="0.8"/>
+  <ellipse cx="270" cy="25" rx="22" ry="8" fill="white" opacity="0.8"/>
+  <!-- Ground -->
+  <rect x="0" y="140" width="320" height="20" fill="#c9a96e"/>
+  <!-- Market building - big covered market -->
+  <rect x="20" y="55" width="280" height="85" fill="#f5d97c" stroke="#c9a94e" stroke-width="1.5"/>
+  <!-- Red curved roof -->
+  <path d="M 15 55 Q 160 35 305 55 Z" fill="#c84848" stroke="#8b2e2e" stroke-width="1.5"/>
+  <path d="M 15 55 Q 160 40 305 55" fill="none" stroke="#a83838" stroke-width="0.8"/>
+  <!-- Central arch/entrance -->
+  <path d="M 130 140 L 130 95 Q 130 80 160 80 Q 190 80 190 95 L 190 140 Z" fill="#5c3d24" stroke="#3d2817" stroke-width="1"/>
+  <!-- Shop stalls (colorful awnings) -->
+  <g>
+    <!-- Stall 1 - red -->
+    <rect x="30" y="85" width="28" height="55" fill="#fff4c2" stroke="#c9a94e" stroke-width="0.5"/>
+    <polygon points="28,85 44,75 60,85" fill="#e74c3c"/>
+    <circle cx="40" cy="105" r="3" fill="#e74c3c"/>
+    <circle cx="48" cy="100" r="3" fill="#27ae60"/>
+    <circle cx="44" cy="115" r="3" fill="#f39c12"/>
+    
+    <!-- Stall 2 - green -->
+    <rect x="62" y="85" width="28" height="55" fill="#fff4c2" stroke="#c9a94e" stroke-width="0.5"/>
+    <polygon points="60,85 76,75 92,85" fill="#27ae60"/>
+    <rect x="68" y="100" width="6" height="8" fill="#27ae60"/>
+    <rect x="78" y="100" width="6" height="8" fill="#e74c3c"/>
+    <rect x="68" y="115" width="6" height="8" fill="#f39c12"/>
+    <rect x="78" y="115" width="6" height="8" fill="#b19cd9"/>
+    
+    <!-- Stall 3 - yellow -->
+    <rect x="94" y="85" width="28" height="55" fill="#fff4c2" stroke="#c9a94e" stroke-width="0.5"/>
+    <polygon points="92,85 108,75 124,85" fill="#f39c12"/>
+    <ellipse cx="108" cy="110" rx="10" ry="5" fill="#d4a574"/>
+    <ellipse cx="108" cy="120" rx="10" ry="5" fill="#d4a574"/>
+    
+    <!-- Stall 4 - blue -->
+    <rect x="198" y="85" width="28" height="55" fill="#fff4c2" stroke="#c9a94e" stroke-width="0.5"/>
+    <polygon points="196,85 212,75 228,85" fill="#3498db"/>
+    <circle cx="208" cy="105" r="4" fill="#e74c3c"/>
+    <circle cx="218" cy="108" r="4" fill="#27ae60"/>
+    <circle cx="212" cy="118" r="4" fill="#f39c12"/>
+    
+    <!-- Stall 5 - purple -->
+    <rect x="230" y="85" width="28" height="55" fill="#fff4c2" stroke="#c9a94e" stroke-width="0.5"/>
+    <polygon points="228,85 244,75 260,85" fill="#9b59b6"/>
+    <rect x="236" y="100" width="6" height="10" fill="#e74c3c"/>
+    <rect x="246" y="100" width="6" height="10" fill="#f39c12"/>
+    <rect x="236" y="115" width="6" height="10" fill="#27ae60"/>
+    <rect x="246" y="115" width="6" height="10" fill="#3498db"/>
+    
+    <!-- Stall 6 - pink -->
+    <rect x="262" y="85" width="28" height="55" fill="#fff4c2" stroke="#c9a94e" stroke-width="0.5"/>
+    <polygon points="260,85 276,75 292,85" fill="#ff8fb1"/>
+    <ellipse cx="276" cy="110" rx="8" ry="4" fill="#d4a574"/>
+    <ellipse cx="276" cy="120" rx="8" ry="4" fill="#d4a574"/>
+  </g>
+  <!-- Sign -->
+  <rect x="120" y="45" width="80" height="12" fill="#3d2d56" rx="3"/>
+  <text x="160" y="54" text-anchor="middle" font-size="8" fill="white" font-family="Arial" font-weight="bold">CHỢ HÒA BÌNH</text>
+  <!-- People shopping -->
+  <g>
+    <circle cx="150" cy="145" r="3" fill="#ffd93d"/>
+    <rect x="148.5" y="147" width="3" height="8" fill="#e74c3c"/>
+    <circle cx="170" cy="145" r="3" fill="#b19cd9"/>
+    <rect x="168.5" y="147" width="3" height="8" fill="#3498db"/>
+  </g>
+  <!-- Lanterns -->
+  <circle cx="45" cy="65" r="3" fill="#e74c3c"/>
+  <circle cx="160" cy="45" r="3" fill="#e74c3c"/>
+  <circle cx="275" cy="65" r="3" fill="#e74c3c"/>
+</svg>`;
+
+// SVG: Ẩm thực - bowls of food
+const svgFood = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="tableGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff4c2"/>
+      <stop offset="100%" stop-color="#ffd1a8"/>
+    </radialGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#tableGrad)"/>
+  <!-- Table shadow -->
+  <ellipse cx="160" cy="155" rx="150" ry="10" fill="#8b6e4d" opacity="0.2"/>
+  
+  <!-- Bowl 1: Mì vịt tiềm -->
+  <g transform="translate(60, 75)">
+    <ellipse cx="0" cy="20" rx="35" ry="8" fill="#5c3d24" opacity="0.3"/>
+    <path d="M -30 0 Q -30 25 0 25 Q 30 25 30 0 Z" fill="#3d2817"/>
+    <ellipse cx="0" cy="0" rx="30" ry="7" fill="#c98a4a"/>
+    <ellipse cx="0" cy="-1" rx="28" ry="5" fill="#d4a574"/>
+    <!-- Noodles -->
+    <path d="M -15 -3 Q -10 -6 -5 -3 Q 0 -6 5 -3 Q 10 -6 15 -3" stroke="#f5e6c8" stroke-width="1.5" fill="none"/>
+    <path d="M -20 -1 Q -15 -4 -10 -1 Q -5 -4 0 -1" stroke="#f5e6c8" stroke-width="1.5" fill="none"/>
+    <!-- Duck meat -->
+    <ellipse cx="8" cy="-3" rx="6" ry="4" fill="#8b4513"/>
+    <ellipse cx="-5" cy="-2" rx="4" ry="3" fill="#a0522d"/>
+    <!-- Green onion -->
+    <line x1="0" y1="-4" x2="3" y2="-8" stroke="#4a9c4a" stroke-width="1"/>
+    <line x1="-8" y1="-4" x2="-10" y2="-8" stroke="#4a9c4a" stroke-width="1"/>
+    <!-- Steam -->
+    <path d="M -5 -12 Q -3 -18 -5 -24" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+    <path d="M 5 -12 Q 7 -18 5 -24" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+    <text x="0" y="40" text-anchor="middle" font-size="8" fill="#3d2d56" font-family="Arial" font-weight="bold">Mì vịt tiềm</text>
+  </g>
+  
+  <!-- Bowl 2: Há cảo (dumplings) -->
+  <g transform="translate(160, 75)">
+    <ellipse cx="0" cy="20" rx="35" ry="8" fill="#5c3d24" opacity="0.3"/>
+    <path d="M -30 0 Q -30 25 0 25 Q 30 25 30 0 Z" fill="#e74c3c"/>
+    <ellipse cx="0" cy="0" rx="30" ry="7" fill="#8b6e4d"/>
+    <ellipse cx="0" cy="-1" rx="28" ry="5" fill="#c9a96e"/>
+    <!-- Dumplings -->
+    <path d="M -18 -4 Q -14 -10 -10 -4 Q -6 -10 -2 -4 Q 2 -10 6 -4 Q 10 -10 14 -4 Q 18 -10 20 -4" 
+          fill="#f5e6c8" stroke="#c9a96e" stroke-width="0.5"/>
+    <ellipse cx="-14" cy="-6" rx="5" ry="3" fill="#fff4c2"/>
+    <ellipse cx="-4" cy="-6" rx="5" ry="3" fill="#fff4c2"/>
+    <ellipse cx="6" cy="-6" rx="5" ry="3" fill="#fff4c2"/>
+    <ellipse cx="16" cy="-6" rx="5" ry="3" fill="#fff4c2"/>
+    <!-- Little pleats on dumplings -->
+    <line x1="-16" y1="-7" x2="-16" y2="-5" stroke="#c9a96e" stroke-width="0.3"/>
+    <line x1="-14" y1="-8" x2="-14" y2="-4" stroke="#c9a96e" stroke-width="0.3"/>
+    <line x1="-12" y1="-7" x2="-12" y2="-5" stroke="#c9a96e" stroke-width="0.3"/>
+    <!-- Steam -->
+    <path d="M 0 -12 Q 2 -18 0 -24" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+    <text x="0" y="40" text-anchor="middle" font-size="8" fill="#3d2d56" font-family="Arial" font-weight="bold">Há cảo</text>
+  </g>
+  
+  <!-- Bowl 3: Chè -->
+  <g transform="translate(260, 75)">
+    <ellipse cx="0" cy="20" rx="30" ry="7" fill="#5c3d24" opacity="0.3"/>
+    <path d="M -25 0 Q -25 22 0 22 Q 25 22 25 0 Z" fill="white" stroke="#d4c4a8" stroke-width="1"/>
+    <ellipse cx="0" cy="0" rx="25" ry="5" fill="#b19cd9" opacity="0.7"/>
+    <ellipse cx="0" cy="-1" rx="23" ry="4" fill="#d4a9e8"/>
+    <!-- Beans/lotus seeds -->
+    <circle cx="-10" cy="-2" r="2.5" fill="#8b6e4d"/>
+    <circle cx="-3" cy="-3" r="2.5" fill="#d4c4a8"/>
+    <circle cx="5" cy="-2" r="2.5" fill="#8b6e4d"/>
+    <circle cx="12" cy="-3" r="2.5" fill="#d4c4a8"/>
+    <circle cx="-6" cy="0" r="2" fill="#f5e6c8"/>
+    <circle cx="8" cy="0" r="2" fill="#f5e6c8"/>
+    <!-- Coconut milk on top -->
+    <ellipse cx="-2" cy="-3" rx="3" ry="1" fill="white" opacity="0.8"/>
+    <text x="0" y="40" text-anchor="middle" font-size="8" fill="#3d2d56" font-family="Arial" font-weight="bold">Chè hạt sen</text>
+  </g>
+  
+  <!-- Chopsticks -->
+  <line x1="15" y1="65" x2="50" y2="55" stroke="#d4a574" stroke-width="2" stroke-linecap="round"/>
+  <line x1="18" y1="70" x2="53" y2="60" stroke="#d4a574" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Title -->
+  <rect x="100" y="15" width="120" height="18" fill="#3d2d56" rx="9"/>
+  <text x="160" y="28" text-anchor="middle" font-size="10" fill="white" font-family="Arial" font-weight="bold">✨ ĂN GÌ NGON? ✨</text>
+</svg>`;
+
+// SVG: Đình Minh Hương
+const svgDinh = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="dinhSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff4c2"/>
+      <stop offset="100%" stop-color="#ffd1dc"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#dinhSky)"/>
+  <circle cx="270" cy="30" r="14" fill="#ffd93d" opacity="0.8"/>
+  <!-- Ground -->
+  <rect x="0" y="140" width="320" height="20" fill="#c9a96e"/>
+  <!-- Stone path -->
+  <path d="M 140 160 L 135 140 L 185 140 L 180 160 Z" fill="#a89580"/>
+  <rect x="145" y="145" width="8" height="3" fill="#8b6e4d"/>
+  <rect x="160" y="145" width="8" height="3" fill="#8b6e4d"/>
+  <rect x="172" y="145" width="8" height="3" fill="#8b6e4d"/>
+  <rect x="148" y="152" width="8" height="3" fill="#8b6e4d"/>
+  <rect x="164" y="152" width="8" height="3" fill="#8b6e4d"/>
+  
+  <!-- Main temple body -->
+  <rect x="70" y="75" width="180" height="65" fill="#8b2e2e" stroke="#5c1a1a" stroke-width="1"/>
+  <!-- Temple foundation -->
+  <rect x="65" y="135" width="190" height="8" fill="#a88860"/>
+  
+  <!-- Curved Asian roof (lower) -->
+  <path d="M 60 75 Q 60 60 80 55 L 240 55 Q 260 60 260 75 Z" fill="#c84848" stroke="#5c1a1a" stroke-width="1.5"/>
+  <!-- Roof curves up at ends -->
+  <path d="M 55 70 Q 52 60 48 55 Q 55 52 62 58 Q 60 65 60 75" fill="#c84848" stroke="#5c1a1a" stroke-width="1.5"/>
+  <path d="M 265 70 Q 268 60 272 55 Q 265 52 258 58 Q 260 65 260 75" fill="#c84848" stroke="#5c1a1a" stroke-width="1.5"/>
+  
+  <!-- Upper roof -->
+  <path d="M 100 55 Q 100 40 120 35 L 200 35 Q 220 40 220 55 Z" fill="#c84848" stroke="#5c1a1a" stroke-width="1.5"/>
+  <path d="M 95 50 Q 92 42 88 38 Q 95 35 102 40" fill="#c84848" stroke="#5c1a1a" stroke-width="1.5"/>
+  <path d="M 225 50 Q 228 42 232 38 Q 225 35 218 40" fill="#c84848" stroke="#5c1a1a" stroke-width="1.5"/>
+  
+  <!-- Top ornament - dragon/pearl -->
+  <polygon points="155,35 160,22 165,35" fill="#ffd93d"/>
+  <circle cx="160" cy="28" r="3" fill="#e74c3c"/>
+  <circle cx="150" cy="35" r="2" fill="#ffd93d"/>
+  <circle cx="170" cy="35" r="2" fill="#ffd93d"/>
+  
+  <!-- Roof tile lines -->
+  <g stroke="#8b2e2e" stroke-width="0.5" fill="none">
+    <line x1="80" y1="58" x2="80" y2="70"/>
+    <line x1="100" y1="56" x2="100" y2="72"/>
+    <line x1="120" y1="55" x2="120" y2="73"/>
+    <line x1="140" y1="55" x2="140" y2="74"/>
+    <line x1="160" y1="55" x2="160" y2="74"/>
+    <line x1="180" y1="55" x2="180" y2="74"/>
+    <line x1="200" y1="55" x2="200" y2="73"/>
+    <line x1="220" y1="56" x2="220" y2="72"/>
+    <line x1="240" y1="58" x2="240" y2="70"/>
+  </g>
+  
+  <!-- Main doors (red) -->
+  <rect x="140" y="90" width="40" height="50" fill="#5c1a1a" stroke="#3d0a0a" stroke-width="1"/>
+  <line x1="160" y1="90" x2="160" y2="140" stroke="#3d0a0a" stroke-width="1"/>
+  <circle cx="154" cy="115" r="1.5" fill="#ffd93d"/>
+  <circle cx="166" cy="115" r="1.5" fill="#ffd93d"/>
+  <!-- Chinese character on door (福 fortune symbol representation) -->
+  <rect x="150" y="100" width="20" height="12" fill="#ffd93d" rx="2"/>
+  <text x="160" y="110" text-anchor="middle" font-size="10" fill="#8b2e2e" font-family="serif" font-weight="bold">福</text>
+  
+  <!-- Side windows -->
+  <rect x="85" y="95" width="30" height="35" fill="#ffd93d" stroke="#8b6e4d" stroke-width="1"/>
+  <line x1="100" y1="95" x2="100" y2="130" stroke="#8b6e4d" stroke-width="0.5"/>
+  <line x1="85" y1="112" x2="115" y2="112" stroke="#8b6e4d" stroke-width="0.5"/>
+  
+  <rect x="205" y="95" width="30" height="35" fill="#ffd93d" stroke="#8b6e4d" stroke-width="1"/>
+  <line x1="220" y1="95" x2="220" y2="130" stroke="#8b6e4d" stroke-width="0.5"/>
+  <line x1="205" y1="112" x2="235" y2="112" stroke="#8b6e4d" stroke-width="0.5"/>
+  
+  <!-- Red lanterns hanging -->
+  <g>
+    <line x1="40" y1="50" x2="40" y2="55" stroke="#8b6e4d" stroke-width="1"/>
+    <ellipse cx="40" cy="62" rx="7" ry="9" fill="#e74c3c" stroke="#8b2e2e" stroke-width="1"/>
+    <rect x="37" y="53" width="6" height="2" fill="#ffd93d"/>
+    <rect x="37" y="70" width="6" height="2" fill="#ffd93d"/>
+    <line x1="40" y1="72" x2="40" y2="76" stroke="#ffd93d" stroke-width="0.5"/>
+    
+    <line x1="280" y1="50" x2="280" y2="55" stroke="#8b6e4d" stroke-width="1"/>
+    <ellipse cx="280" cy="62" rx="7" ry="9" fill="#e74c3c" stroke="#8b2e2e" stroke-width="1"/>
+    <rect x="277" y="53" width="6" height="2" fill="#ffd93d"/>
+    <rect x="277" y="70" width="6" height="2" fill="#ffd93d"/>
+    <line x1="280" y1="72" x2="280" y2="76" stroke="#ffd93d" stroke-width="0.5"/>
+  </g>
+  
+  <!-- Incense burners -->
+  <rect x="115" y="132" width="10" height="8" fill="#8b6e4d"/>
+  <line x1="118" y1="132" x2="118" y2="126" stroke="#999" stroke-width="0.5"/>
+  <line x1="120" y1="132" x2="120" y2="125" stroke="#999" stroke-width="0.5"/>
+  <line x1="122" y1="132" x2="122" y2="126" stroke="#999" stroke-width="0.5"/>
+  
+  <rect x="195" y="132" width="10" height="8" fill="#8b6e4d"/>
+  <line x1="198" y1="132" x2="198" y2="126" stroke="#999" stroke-width="0.5"/>
+  <line x1="200" y1="132" x2="200" y2="125" stroke="#999" stroke-width="0.5"/>
+  <line x1="202" y1="132" x2="202" y2="126" stroke="#999" stroke-width="0.5"/>
+</svg>`;
+
+// SVG: Múa lân lễ hội
+const svgFestival = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="festSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff9a76"/>
+      <stop offset="50%" stop-color="#ffd93d"/>
+      <stop offset="100%" stop-color="#ffd1dc"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#festSky)"/>
+  
+  <!-- Sparkles/fireworks in background -->
+  <g fill="#ffd93d">
+    <circle cx="30" cy="20" r="2"/>
+    <circle cx="280" cy="25" r="2"/>
+    <circle cx="50" cy="35" r="1.5"/>
+    <circle cx="290" cy="40" r="1.5"/>
+    <polygon points="100,15 102,20 107,20 103,24 105,29 100,26 95,29 97,24 93,20 98,20" fill="#fff"/>
+    <polygon points="220,15 222,20 227,20 223,24 225,29 220,26 215,29 217,24 213,20 218,20" fill="#fff"/>
+  </g>
+  
+  <!-- Hanging lanterns row -->
+  <line x1="0" y1="35" x2="320" y2="35" stroke="#8b6e4d" stroke-width="0.8"/>
+  <g>
+    <line x1="40" y1="35" x2="40" y2="40" stroke="#8b6e4d" stroke-width="0.5"/>
+    <ellipse cx="40" cy="48" rx="7" ry="9" fill="#e74c3c" stroke="#8b2e2e" stroke-width="0.8"/>
+    <rect x="37" y="39" width="6" height="2" fill="#ffd93d"/>
+    <line x1="40" y1="58" x2="40" y2="62" stroke="#ffd93d" stroke-width="0.5"/>
+    
+    <line x1="90" y1="35" x2="90" y2="40" stroke="#8b6e4d" stroke-width="0.5"/>
+    <ellipse cx="90" cy="48" rx="7" ry="9" fill="#e74c3c" stroke="#8b2e2e" stroke-width="0.8"/>
+    <rect x="87" y="39" width="6" height="2" fill="#ffd93d"/>
+    <line x1="90" y1="58" x2="90" y2="62" stroke="#ffd93d" stroke-width="0.5"/>
+    
+    <line x1="230" y1="35" x2="230" y2="40" stroke="#8b6e4d" stroke-width="0.5"/>
+    <ellipse cx="230" cy="48" rx="7" ry="9" fill="#e74c3c" stroke="#8b2e2e" stroke-width="0.8"/>
+    <rect x="227" y="39" width="6" height="2" fill="#ffd93d"/>
+    <line x1="230" y1="58" x2="230" y2="62" stroke="#ffd93d" stroke-width="0.5"/>
+    
+    <line x1="280" y1="35" x2="280" y2="40" stroke="#8b6e4d" stroke-width="0.5"/>
+    <ellipse cx="280" cy="48" rx="7" ry="9" fill="#e74c3c" stroke="#8b2e2e" stroke-width="0.8"/>
+    <rect x="277" y="39" width="6" height="2" fill="#ffd93d"/>
+    <line x1="280" y1="58" x2="280" y2="62" stroke="#ffd93d" stroke-width="0.5"/>
+  </g>
+  
+  <!-- Ground/street -->
+  <rect x="0" y="140" width="320" height="20" fill="#c9a96e"/>
+  <rect x="0" y="135" width="320" height="5" fill="#a88860"/>
+  
+  <!-- LION DANCE (the main feature) -->
+  <g transform="translate(160, 100)">
+    <!-- Lion body (back) -->
+    <ellipse cx="25" cy="20" rx="30" ry="20" fill="#ffd93d"/>
+    <!-- Body patterns -->
+    <circle cx="15" cy="15" r="4" fill="#e74c3c"/>
+    <circle cx="30" cy="20" r="4" fill="#27ae60"/>
+    <circle cx="40" cy="15" r="4" fill="#3498db"/>
+    <circle cx="20" cy="25" r="3" fill="#9b59b6"/>
+    <circle cx="38" cy="28" r="3" fill="#e74c3c"/>
+    
+    <!-- Lion head (big dramatic) -->
+    <circle cx="-25" cy="10" r="28" fill="#e74c3c" stroke="#8b2e2e" stroke-width="1"/>
+    <!-- Mane -->
+    <g fill="#ffd93d" stroke="#d4a017" stroke-width="0.5">
+      <polygon points="-50,5 -55,-5 -48,-3"/>
+      <polygon points="-50,15 -56,20 -48,22"/>
+      <polygon points="-25,-18 -30,-25 -22,-24"/>
+      <polygon points="-15,-15 -10,-22 -8,-15"/>
+      <polygon points="-5,-5 2,-8 0,0"/>
+      <polygon points="-5,20 0,28 -5,25"/>
+    </g>
+    <!-- Horn -->
+    <polygon points="-35,-18 -40,-30 -32,-28" fill="#ffd93d" stroke="#d4a017" stroke-width="0.5"/>
+    <!-- Big eyes -->
+    <circle cx="-32" cy="3" r="6" fill="white"/>
+    <circle cx="-32" cy="3" r="3" fill="#3d2d56"/>
+    <circle cx="-32" cy="2" r="1" fill="white"/>
+    <circle cx="-18" cy="3" r="6" fill="white"/>
+    <circle cx="-18" cy="3" r="3" fill="#3d2d56"/>
+    <circle cx="-18" cy="2" r="1" fill="white"/>
+    <!-- Eyebrows (yellow fluffy) -->
+    <ellipse cx="-32" cy="-4" rx="6" ry="2" fill="#ffd93d"/>
+    <ellipse cx="-18" cy="-4" rx="6" ry="2" fill="#ffd93d"/>
+    <!-- Nose/mouth -->
+    <ellipse cx="-25" cy="12" rx="5" ry="4" fill="#ffd93d"/>
+    <path d="M -32 18 Q -25 22 -18 18" fill="white" stroke="#8b2e2e" stroke-width="1"/>
+    <!-- Teeth -->
+    <polygon points="-29,18 -27,22 -25,18" fill="white" stroke="#8b6e4d" stroke-width="0.3"/>
+    <polygon points="-25,18 -23,22 -21,18" fill="white" stroke="#8b6e4d" stroke-width="0.3"/>
+    
+    <!-- Dancers' legs below -->
+    <rect x="-22" y="38" width="4" height="15" fill="#3498db"/>
+    <rect x="-14" y="38" width="4" height="15" fill="#3498db"/>
+    <rect x="15" y="38" width="4" height="15" fill="#e74c3c"/>
+    <rect x="25" y="38" width="4" height="15" fill="#e74c3c"/>
+    <!-- Shoes -->
+    <ellipse cx="-20" cy="54" rx="4" ry="2" fill="#3d2d56"/>
+    <ellipse cx="-12" cy="54" rx="4" ry="2" fill="#3d2d56"/>
+    <ellipse cx="17" cy="54" rx="4" ry="2" fill="#3d2d56"/>
+    <ellipse cx="27" cy="54" rx="4" ry="2" fill="#3d2d56"/>
+  </g>
+  
+  <!-- Crowd watching - little heads -->
+  <g>
+    <circle cx="40" cy="135" r="5" fill="#d4a574"/>
+    <rect x="36" y="140" width="8" height="10" fill="#e74c3c"/>
+    <circle cx="60" cy="138" r="4" fill="#ffd93d"/>
+    <rect x="57" y="142" width="7" height="8" fill="#3498db"/>
+    <circle cx="80" cy="135" r="5" fill="#d4a574"/>
+    <rect x="76" y="140" width="8" height="10" fill="#27ae60"/>
+    <circle cx="275" cy="135" r="5" fill="#d4a574"/>
+    <rect x="271" y="140" width="8" height="10" fill="#9b59b6"/>
+    <circle cx="295" cy="138" r="4" fill="#d4a574"/>
+    <rect x="292" y="142" width="7" height="8" fill="#e74c3c"/>
+  </g>
+</svg>`;
+
+// SVG: Bé Huy và ông nội ngắm cảnh buổi sáng
+const svgMorning = `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="morningSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd1dc"/>
+      <stop offset="50%" stop-color="#ffd93d"/>
+      <stop offset="100%" stop-color="#d4f1f9"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="160" fill="url(#morningSky)"/>
+  <!-- Big sun rising -->
+  <circle cx="250" cy="65" r="28" fill="#ffd93d" opacity="0.9"/>
+  <circle cx="250" cy="65" r="20" fill="#fff4c2" opacity="0.8"/>
+  <!-- Sun rays -->
+  <g stroke="#ffd93d" stroke-width="2" opacity="0.6">
+    <line x1="250" y1="25" x2="250" y2="35"/>
+    <line x1="250" y1="95" x2="250" y2="105"/>
+    <line x1="210" y1="65" x2="220" y2="65"/>
+    <line x1="280" y1="65" x2="290" y2="65"/>
+    <line x1="222" y1="37" x2="228" y2="43"/>
+    <line x1="272" y1="87" x2="278" y2="93"/>
+    <line x1="278" y1="37" x2="272" y2="43"/>
+    <line x1="228" y1="87" x2="222" y2="93"/>
+  </g>
+  <!-- Birds -->
+  <path d="M 50 40 Q 55 37 60 40 Q 65 37 70 40" stroke="#3d2d56" stroke-width="1.5" fill="none"/>
+  <path d="M 90 55 Q 94 53 98 55 Q 102 53 106 55" stroke="#3d2d56" stroke-width="1.5" fill="none"/>
+  <!-- Ground -->
+  <rect x="0" y="130" width="320" height="30" fill="#a8d8a8"/>
+  <!-- House in background -->
+  <rect x="20" y="90" width="50" height="40" fill="#f5d97c" stroke="#c9a94e" stroke-width="1"/>
+  <polygon points="18,90 45,75 72,90" fill="#c84848"/>
+  <rect x="30" y="105" width="12" height="15" fill="#87ceeb"/>
+  <rect x="50" y="115" width="12" height="15" fill="#5c3d24"/>
+  <!-- Trees -->
+  <circle cx="100" cy="115" r="15" fill="#4a9c4a"/>
+  <rect x="98" y="115" width="4" height="15" fill="#8b6e4d"/>
+  <circle cx="175" cy="118" r="13" fill="#5ca85c"/>
+  <rect x="173" y="118" width="4" height="12" fill="#8b6e4d"/>
+  
+  <!-- GRANDPA -->
+  <g transform="translate(130, 90)">
+    <!-- Body -->
+    <path d="M -10 40 L -10 15 Q -10 10 0 10 Q 10 10 10 15 L 10 40 Z" fill="#87ceeb"/>
+    <!-- Head -->
+    <circle cx="0" cy="0" r="11" fill="#f5d0a0"/>
+    <!-- White hair -->
+    <path d="M -10 -4 Q -11 -12 -5 -12 Q 0 -14 5 -12 Q 11 -12 10 -4 Q 8 -8 4 -8 Q 0 -10 -4 -8 Q -8 -8 -10 -4" fill="#e8e8e8"/>
+    <!-- Eyes with glasses -->
+    <circle cx="-4" cy="-1" r="3" fill="none" stroke="#3d2d56" stroke-width="0.8"/>
+    <circle cx="4" cy="-1" r="3" fill="none" stroke="#3d2d56" stroke-width="0.8"/>
+    <line x1="-1" y1="-1" x2="1" y2="-1" stroke="#3d2d56" stroke-width="0.8"/>
+    <circle cx="-4" cy="-1" r="1" fill="#3d2d56"/>
+    <circle cx="4" cy="-1" r="1" fill="#3d2d56"/>
+    <!-- Smile -->
+    <path d="M -3 4 Q 0 7 3 4" stroke="#c94970" stroke-width="1" fill="none"/>
+    <!-- White mustache -->
+    <ellipse cx="0" cy="3" rx="4" ry="1" fill="#e8e8e8"/>
+    <!-- Arms -->
+    <rect x="-15" y="15" width="4" height="15" fill="#87ceeb"/>
+    <rect x="11" y="15" width="4" height="15" fill="#87ceeb"/>
+    <circle cx="-13" cy="32" r="2.5" fill="#f5d0a0"/>
+    <circle cx="13" cy="32" r="2.5" fill="#f5d0a0"/>
+    <!-- Legs -->
+    <rect x="-7" y="40" width="5" height="10" fill="#3d2d56"/>
+    <rect x="2" y="40" width="5" height="10" fill="#3d2d56"/>
+  </g>
+  
+  <!-- BÉ HUY -->
+  <g transform="translate(200, 100)">
+    <!-- Body -->
+    <path d="M -7 30 L -7 12 Q -7 8 0 8 Q 7 8 7 12 L 7 30 Z" fill="#ff8fb1"/>
+    <!-- Head -->
+    <circle cx="0" cy="0" r="9" fill="#f5d0a0"/>
+    <!-- Hair (short, black) -->
+    <path d="M -9 -4 Q -8 -10 -3 -10 Q 0 -11 3 -10 Q 8 -10 9 -4 Q 7 -7 4 -6 Q 0 -8 -4 -6 Q -7 -7 -9 -4" fill="#3d2d56"/>
+    <!-- Eyes (happy) -->
+    <path d="M -4 -1 Q -3 -3 -2 -1" stroke="#3d2d56" stroke-width="1.2" fill="none"/>
+    <path d="M 2 -1 Q 3 -3 4 -1" stroke="#3d2d56" stroke-width="1.2" fill="none"/>
+    <!-- Cheeks -->
+    <circle cx="-5" cy="2" r="1.2" fill="#ffb3b3" opacity="0.6"/>
+    <circle cx="5" cy="2" r="1.2" fill="#ffb3b3" opacity="0.6"/>
+    <!-- Big smile -->
+    <path d="M -2.5 3 Q 0 6 2.5 3" stroke="#c94970" stroke-width="1" fill="#c94970" fill-opacity="0.3"/>
+    <!-- Arms raised (excited) -->
+    <rect x="-11" y="10" width="3" height="10" fill="#ff8fb1" transform="rotate(-30 -9 15)"/>
+    <rect x="8" y="10" width="3" height="10" fill="#ff8fb1" transform="rotate(30 9 15)"/>
+    <circle cx="-14" cy="7" r="2" fill="#f5d0a0"/>
+    <circle cx="14" cy="7" r="2" fill="#f5d0a0"/>
+    <!-- Legs -->
+    <rect x="-5" y="30" width="4" height="8" fill="#3498db"/>
+    <rect x="1" y="30" width="4" height="8" fill="#3498db"/>
+    <!-- Backpack -->
+    <rect x="-9" y="14" width="4" height="10" fill="#e74c3c" transform="rotate(-10 -7 19)"/>
+  </g>
+  
+  <!-- Speech bubble -->
+  <g transform="translate(165, 55)">
+    <ellipse cx="0" cy="0" rx="25" ry="12" fill="white" stroke="#ff8fb1" stroke-width="1.5"/>
+    <path d="M 10 10 L 15 18 L 12 11" fill="white" stroke="#ff8fb1" stroke-width="1.5"/>
+    <text x="0" y="3" text-anchor="middle" font-size="8" fill="#c94970" font-family="Arial" font-weight="bold">Đi thôi ông ơi!</text>
+  </g>
+</svg>`;
+
+// ===== STORY CONTENT =====
+const pages = [
+  // PAGE 1 - COVER (phong cách poster Trường Trần Bình Trọng)
+  {
+    class: 'cover',
+    html: `
+      <!-- Clouds -->
+      <div class="cloud-deco c1">☁️</div>
+      <div class="cloud-deco c2">☁️</div>
+      <div class="cloud-deco c3">☁️</div>
+      
+      <!-- Floating hearts -->
+      <div class="heart-float h1">💗</div>
+      <div class="heart-float h2">💗</div>
+      <div class="heart-float h3">💗</div>
+      <div class="heart-float h4">💗</div>
+      <div class="heart-float h5">💗</div>
+      <div class="heart-float h6">💗</div>
+      <div class="heart-float h7">💗</div>
+      
+      <!-- School name -->
+      <div class="school-name"><img src="data:image/png;base64,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" class="school-logo" alt="TBT Logo">TRƯỜNG TIỂU HỌC TRẦN BÌNH TRỌNG</div>
+      
+      <!-- Book + character illustration -->
+      <div class="cover-illustration">
+        <svg viewBox="0 0 320 230" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bookCover" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ff6b35"/>
+              <stop offset="100%" stop-color="#c0392b"/>
+            </linearGradient>
+            <linearGradient id="bookPages" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fffef5"/>
+              <stop offset="100%" stop-color="#f5ecd9"/>
+            </linearGradient>
+            <radialGradient id="cloudPuff" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="white" stop-opacity="1"/>
+              <stop offset="100%" stop-color="white" stop-opacity="0.3"/>
+            </radialGradient>
+            <linearGradient id="shineGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#ffd93d" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#ffd93d" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          
+          <!-- Cloud puff under book -->
+          <ellipse cx="160" cy="180" rx="130" ry="30" fill="url(#cloudPuff)"/>
+          <ellipse cx="100" cy="175" rx="50" ry="18" fill="white" opacity="0.7"/>
+          <ellipse cx="220" cy="175" rx="50" ry="18" fill="white" opacity="0.7"/>
+          <ellipse cx="160" cy="185" rx="80" ry="15" fill="white" opacity="0.9"/>
+          
+          <!-- Shine rays -->
+          <g opacity="0.5">
+            <polygon points="160,100 140,30 160,50 180,30" fill="url(#shineGrad)"/>
+            <polygon points="160,100 90,70 110,90 100,110" fill="url(#shineGrad)"/>
+            <polygon points="160,100 230,70 210,90 220,110" fill="url(#shineGrad)"/>
+          </g>
+          
+          <!-- Open book -->
+          <path d="M 45 140 Q 45 170 70 175 L 160 180 L 250 175 Q 275 170 275 140 L 270 100 L 160 105 L 50 100 Z" 
+                fill="url(#bookCover)" stroke="#8b2e2e" stroke-width="1.5"/>
+          
+          <path d="M 155 110 Q 160 115 165 110 L 165 178 Q 160 180 155 178 Z" fill="#8b2e2e" opacity="0.4"/>
+          
+          <!-- Left page -->
+          <path d="M 55 105 Q 60 100 80 100 L 155 110 L 155 172 L 80 170 Q 60 168 55 165 Z" 
+                fill="url(#bookPages)" stroke="#c9a96e" stroke-width="0.8"/>
+          <line x1="70" y1="125" x2="145" y2="130" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <line x1="70" y1="135" x2="145" y2="140" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <line x1="70" y1="145" x2="145" y2="150" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <line x1="70" y1="155" x2="145" y2="160" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          
+          <!-- Right page -->
+          <path d="M 265 105 Q 260 100 240 100 L 165 110 L 165 172 L 240 170 Q 260 168 265 165 Z" 
+                fill="url(#bookPages)" stroke="#c9a96e" stroke-width="0.8"/>
+          <line x1="175" y1="130" x2="250" y2="125" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <line x1="175" y1="140" x2="250" y2="135" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <line x1="175" y1="150" x2="250" y2="145" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <line x1="175" y1="160" x2="250" y2="155" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          
+          <!-- Bookmarks/ribbons -->
+          <path d="M 85 170 L 80 195 L 90 190 L 95 175 Z" fill="#ffd93d" stroke="#c9a017" stroke-width="0.5"/>
+          <path d="M 235 170 L 240 195 L 230 190 L 225 175 Z" fill="#87ceeb" stroke="#4a9dbf" stroke-width="0.5"/>
+          <circle cx="85" cy="198" r="3" fill="#c9a017"/>
+          <circle cx="235" cy="198" r="3" fill="#4a9dbf"/>
+          
+          <!-- BÉ HUY sitting on book -->
+          <g transform="translate(160, 85)">
+            <ellipse cx="0" cy="25" rx="30" ry="4" fill="#3d2d56" opacity="0.1"/>
+            
+            <!-- Legs sitting position -->
+            <path d="M -15 10 Q -20 15 -18 25 L -22 35 Q -22 38 -18 38 L -12 38 Q -10 38 -10 34 L -8 20 Z" 
+                  fill="#4a9dbf" stroke="#2c6a8a" stroke-width="0.8"/>
+            <path d="M 15 10 Q 20 15 18 25 L 22 35 Q 22 38 18 38 L 12 38 Q 10 38 10 34 L 8 20 Z" 
+                  fill="#4a9dbf" stroke="#2c6a8a" stroke-width="0.8"/>
+            <!-- Shoes -->
+            <ellipse cx="-15" cy="40" rx="6" ry="3" fill="#ffffff" stroke="#888" stroke-width="0.5"/>
+            <ellipse cx="15" cy="40" rx="6" ry="3" fill="#ffffff" stroke="#888" stroke-width="0.5"/>
+            <rect x="-18" y="37" width="6" height="4" fill="#4a9dbf"/>
+            <rect x="12" y="37" width="6" height="4" fill="#4a9dbf"/>
+            
+            <!-- Overalls (blue) -->
+            <path d="M -18 -5 Q -20 0 -18 12 L -12 16 Q 0 18 12 16 L 18 12 Q 20 0 18 -5 Q 15 -10 10 -12 L -10 -12 Q -15 -10 -18 -5 Z" 
+                  fill="#4a9dbf" stroke="#2c6a8a" stroke-width="0.8"/>
+            
+            <!-- Shirt (cream) -->
+            <path d="M -17 -15 Q -15 -18 -10 -18 L 10 -18 Q 15 -18 17 -15 L 17 -8 Q 15 -5 10 -5 L -10 -5 Q -15 -5 -17 -8 Z" 
+                  fill="#fff4c2" stroke="#c9a94e" stroke-width="0.6"/>
+            
+            <!-- Arms -->
+            <path d="M -16 -8 Q -25 -5 -30 5 Q -32 10 -30 14 Q -26 15 -23 12 L -18 5 Z" 
+                  fill="#fff4c2" stroke="#c9a94e" stroke-width="0.6"/>
+            <path d="M 16 -8 Q 25 -5 30 5 Q 32 10 30 14 Q 26 15 23 12 L 18 5 Z" 
+                  fill="#fff4c2" stroke="#c9a94e" stroke-width="0.6"/>
+            <circle cx="-30" cy="13" r="3" fill="#f5d0a0"/>
+            <circle cx="30" cy="13" r="3" fill="#f5d0a0"/>
+            
+            <!-- School logo on chest -->
+            <circle cx="0" cy="-3" r="6" fill="#ffffff" stroke="#4a9c4a" stroke-width="1"/>
+            <text x="0" y="0" text-anchor="middle" font-size="5" fill="#c0392b" font-weight="bold" font-family="Arial">TBT</text>
+            <ellipse cx="-3" cy="-8" rx="2" ry="1" fill="#4a9c4a" transform="rotate(-30 -3 -8)"/>
+            <ellipse cx="3" cy="-8" rx="2" ry="1" fill="#4a9c4a" transform="rotate(30 3 -8)"/>
+            
+            <!-- Head -->
+            <circle cx="0" cy="-30" r="15" fill="#f5d0a0" stroke="#d4a574" stroke-width="0.5"/>
+            
+            <!-- Hair (boy short black) -->
+            <path d="M -14 -35 Q -15 -45 -8 -45 Q -3 -48 3 -48 Q 10 -47 13 -43 Q 15 -38 14 -33 Q 10 -37 5 -35 Q 0 -38 -5 -35 Q -10 -37 -14 -35" 
+                  fill="#3d2d56" stroke="#1a0f2d" stroke-width="0.5"/>
+            <path d="M -8 -38 Q -3 -42 5 -38 Q 8 -32 2 -30 Q -4 -33 -8 -38" fill="#3d2d56"/>
+            
+            <!-- Ears -->
+            <ellipse cx="-15" cy="-30" rx="2" ry="3" fill="#f5d0a0" stroke="#d4a574" stroke-width="0.5"/>
+            <ellipse cx="15" cy="-30" rx="2" ry="3" fill="#f5d0a0" stroke="#d4a574" stroke-width="0.5"/>
+            
+            <!-- Big happy eyes -->
+            <ellipse cx="-5" cy="-30" rx="2.5" ry="3.5" fill="#1a0f2d"/>
+            <ellipse cx="5" cy="-30" rx="2.5" ry="3.5" fill="#1a0f2d"/>
+            <circle cx="-4" cy="-31.5" r="1" fill="white"/>
+            <circle cx="6" cy="-31.5" r="1" fill="white"/>
+            
+            <!-- Rosy cheeks -->
+            <ellipse cx="-9" cy="-25" rx="2.5" ry="1.8" fill="#ff8fb1" opacity="0.6"/>
+            <ellipse cx="9" cy="-25" rx="2.5" ry="1.8" fill="#ff8fb1" opacity="0.6"/>
+            
+            <!-- Big open smile -->
+            <path d="M -5 -22 Q 0 -17 5 -22 L 4 -19 Q 0 -16 -4 -19 Z" fill="#c0392b"/>
+            <ellipse cx="0" cy="-19" rx="3" ry="1.5" fill="#8b1e1e"/>
+            <ellipse cx="0" cy="-18.5" rx="1.5" ry="0.8" fill="#ff6b6b"/>
+          </g>
+          
+          <!-- Sparkles -->
+          <g>
+            <text x="50" y="95" font-size="14" fill="#ffd93d">✨</text>
+            <text x="260" y="95" font-size="14" fill="#ffd93d">✨</text>
+            <text x="30" y="140" font-size="10" fill="#ffd93d">⭐</text>
+            <text x="285" y="140" font-size="10" fill="#ffd93d">⭐</text>
+          </g>
+        </svg>
+      </div>
+      
+      <!-- Main bubble title -->
+      <div class="bubble-title">
+        <div class="line1">Một ngày</div>
+        <div class="line2">Ở PHƯỜNG</div>
+        <div class="line3">Chợ Quán</div>
+      </div>
+      
+      <!-- Bottom info -->
+      <div class="cover-bottom">
+        <div class="cover-subtitle-new">✨ Digital Flipbook ✨</div>
+        <div class="cover-author-new">👦🏻 Dương Gia Huy — Năm 4</div>
+        <div class="cover-year">Năm học 2025-2026</div>
+      </div>
+    `,
+    pageNum: ''
+  },
+  // PAGE 2 - Mở truyện
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">📍 Mở truyện</div>
+      <h2>Sáng chủ nhật đẹp trời <span class="emoji">☀️</span></h2>
+      <div class="image-frame">
+        ${svgMorning}
+        <div class="caption">🌅 Ông cháu chuẩn bị lên đường</div>
+      </div>
+      <p class="narrator">Tiếng chim hót rộn ràng đánh thức Huy dậy. Huy chạy xuống bếp, thấy ông nội đã chuẩn bị sữa nóng.</p>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Huy ơi, hôm nay ông cháu mình đi khám phá phường Chợ Quán nhé!"
+      </div>
+      <div class="dialogue">
+        <span class="speaker">Bé Huy</span>
+        "Yayy! Cháu thích lắm! Cháu đi thay đồ ngay!"
+      </div>
+    `,
+    pageNum: '1'
+  },
+  // PAGE 3 - Giới thiệu phường
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">🗺️ Vị trí</div>
+      <h2>Phường Chợ Quán ở đâu? <span class="emoji">🏘️</span></h2>
+      <div class="image-frame">
+        ${svgMap}
+        <div class="caption">📍 Phường Chợ Quán trên bản đồ</div>
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Phường mình nằm ở trung tâm TP.HCM, rộng 1,28 km² với hơn 63.000 người dân. Đã có hơn 300 năm lịch sử đó cháu!"
+      </div>
+      <div class="fun-fact">
+        <strong>🌟 Bé có biết?</strong>
+        Tên "Chợ Quán" có từ xưa vì nơi đây từng có chợ nhỏ với nhiều lều quán buôn bán tấp nập!
+      </div>
+    `,
+    pageNum: '2'
+  },
+  // PAGE 4 - Chương 1
+  {
+    class: 'section-title chapter1',
+    html: `
+      <div class="chapter-num">⛪ CHƯƠNG 1</div>
+      <h2>Những công trình<br>cổ kính</h2>
+      <div class="big-emoji">🏛️</div>
+      <p>"Ông ơi, tại sao ở phường mình có nhiều công trình cổ thế ạ?"</p>
+    `,
+    pageNum: '3'
+  },
+  // PAGE 5 - Nhà thờ Chợ Quán
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">📍 Điểm đến 1</div>
+      <h2>Nhà thờ Chợ Quán <span class="emoji">⛪</span></h2>
+      <div class="image-frame">
+        ${svgChurch}
+        <div class="caption">⛪ Nhà thờ màu hồng hơn 300 năm tuổi</div>
+      </div>
+      <p class="narrator">Huy tròn mắt ngắm ngôi nhà thờ màu hồng với tháp chuông nhọn vươn cao lên bầu trời!</p>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Nhà thờ này khởi nguồn từ năm 1674 — nhà thờ cổ nhất thành phố đó cháu. Đã xây đi xây lại 8 lần!"
+      </div>
+      <div class="dialogue">
+        <span class="speaker">Bé Huy</span>
+        "Wow 8 lần cơ ạ? Vậy là nó rất đặc biệt!"
+      </div>
+    `,
+    pageNum: '4'
+  },
+  // PAGE 6 - Bệnh viện
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">📍 Điểm đến 2</div>
+      <h2>Bệnh viện Bệnh Nhiệt đới <span class="emoji">🏥</span></h2>
+      <div class="image-frame tilt-right">
+        ${svgHospital}
+        <div class="caption">🏥 Tên cũ là "Nhà thương Chợ Quán"</div>
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Đây là bệnh viện gần 170 tuổi! Hồi dịch COVID-19, các bác sĩ ở đây đã cứu giúp rất nhiều người."
+      </div>
+      <div class="fun-fact">
+        <strong>💡 Điều em ngưỡng mộ</strong>
+        Trong bệnh viện còn có Khu trại giam Chợ Quán — di tích lịch sử quốc gia. Huy thấy tự hào về phường mình!
+      </div>
+    `,
+    pageNum: '5'
+  },
+  // PAGE 7 - Chương 2
+  {
+    class: 'section-title chapter2',
+    html: `
+      <div class="chapter-num">🎓 CHƯƠNG 2</div>
+      <h2>Những ngôi trường<br>thân yêu</h2>
+      <div class="big-emoji">📚</div>
+      <p>"Huy ơi, đây là những ngôi trường đã dạy biết bao thế hệ học trò..."</p>
+    `,
+    pageNum: '6'
+  },
+  // PAGE 8 - Lê Hồng Phong
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">📍 Điểm đến 3</div>
+      <h2>Trường Lê Hồng Phong <span class="emoji">🏫</span></h2>
+      <div class="image-frame">
+        ${svgSchool1}
+        <div class="caption">🏫 Trường kiến trúc Pháp cổ kính</div>
+      </div>
+      <div class="dialogue">
+        <span class="speaker">Bé Huy</span>
+        "Ông ơi, trường này giống lâu đài quá!"
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Đúng rồi! Được người Pháp xây năm 1925, hoàn thành năm 1928. Rất nhiều người nổi tiếng từng học ở đây đấy!"
+      </div>
+      <p class="narrator">Huy thầm ước một ngày được học tại ngôi trường đẹp này... 🌟</p>
+    `,
+    pageNum: '7'
+  },
+  // PAGE 9 - Đại học Sài Gòn
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">📍 Điểm đến 4</div>
+      <h2>Trường Đại học Sài Gòn <span class="emoji">🎓</span></h2>
+      <div class="image-frame tilt-right">
+        ${svgSchool2}
+        <div class="caption">🎓 Xây năm 1908 — Kiến trúc Á-Âu</div>
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Đây vốn là Trường Trung học Pháp - Hoa xây từ năm 1908. Phường mình được coi là nơi đã gieo mầm cho nền giáo dục miền Nam!"
+      </div>
+      <div class="fun-fact">
+        <strong>🌱 Ý nghĩa đặc biệt</strong>
+        Chợ Quán từ xưa đã có những ngôi trường đầu tiên của Sài Gòn. Vì vậy đây được gọi là "cái nôi giáo dục" của thành phố!
+      </div>
+    `,
+    pageNum: '8'
+  },
+  // PAGE 10 - Chương 3
+  {
+    class: 'section-title chapter3',
+    html: `
+      <div class="chapter-num">🍜 CHƯƠNG 3</div>
+      <h2>Chợ sầm uất<br>& món ngon</h2>
+      <div class="big-emoji">🥟</div>
+      <p>"Bụng Huy đã kêu rồi... Đi ăn thôi ông ơi!"</p>
+    `,
+    pageNum: '9'
+  },
+  // PAGE 11 - Chợ Hòa Bình
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">📍 Điểm đến 5</div>
+      <h2>Chợ Hòa Bình <span class="emoji">🛒</span></h2>
+      <div class="image-frame">
+        ${svgMarket}
+        <div class="caption">🛒 Khu chợ lâu đời của Chợ Lớn</div>
+      </div>
+      <p class="narrator">Vào chợ, Huy bị cuốn hút bởi đủ màu sắc và mùi thơm!</p>
+      <div class="dialogue">
+        <span class="speaker">Bé Huy</span>
+        "Ông ơi thơm quá! Cháu ngửi được mùi bánh bao, mùi chè, mùi mì vịt tiềm!"
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Chợ Hòa Bình là nơi tinh hoa ẩm thực Việt - Hoa hòa quyện. Ngon lắm!"
+      </div>
+    `,
+    pageNum: '10'
+  },
+  // PAGE 12 - Ẩm thực
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">🍽️ Ăn gì ngon?</div>
+      <h2>Thiên đường ẩm thực <span class="emoji">🍜</span></h2>
+      <div class="image-frame tilt-right">
+        ${svgFood}
+        <div class="caption">🍜 Ba món ngon khó quên</div>
+      </div>
+      <p class="narrator">Ông chọn cho Huy một tô mì vịt tiềm nóng hổi và một chén chè hạt sen mát lạnh.</p>
+      <div class="dialogue">
+        <span class="speaker">Bé Huy</span>
+        "Ngon quá ông ơi! Cháu chưa từng ăn món nào ngon thế này!"
+      </div>
+      <div class="fun-fact">
+        <strong>✨ Điều Huy học được</strong>
+        Ẩm thực phường mình đặc biệt vì kết hợp văn hóa Việt và Hoa. Mỗi món ăn đều kể câu chuyện riêng!
+      </div>
+    `,
+    pageNum: '11'
+  },
+  // PAGE 13 - Chương 4
+  {
+    class: 'section-title chapter4',
+    html: `
+      <div class="chapter-num">🏮 CHƯƠNG 4</div>
+      <h2>Văn hóa<br>và lễ hội</h2>
+      <div class="big-emoji">🎎</div>
+      <p>"Cháu có biết không, Chợ Quán là nơi giao thoa văn hóa tuyệt vời..."</p>
+    `,
+    pageNum: '12'
+  },
+  // PAGE 14 - Đình Minh Hương
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">📍 Điểm đến 6</div>
+      <h2>Đình Minh Hương <span class="emoji">🏯</span></h2>
+      <div class="image-frame">
+        ${svgDinh}
+        <div class="caption">🏯 Ngôi đình cổ của người Minh Hương</div>
+      </div>
+      <div class="dialogue">
+        <span class="speaker">Bé Huy</span>
+        "Đình này đẹp quá ông! Có đèn lồng đỏ đung đưa kìa!"
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Đây là Đình Minh Hương — nơi cộng đồng người Hoa tổ chức các lễ hội truyền thống. Tết đông lắm!"
+      </div>
+    `,
+    pageNum: '13'
+  },
+  // PAGE 15 - Múa lân
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">🎊 Lễ hội</div>
+      <h2>Những ngày hội rộn ràng <span class="emoji">🎉</span></h2>
+      <div class="image-frame tilt-right">
+        ${svgFestival}
+        <div class="caption">🐉 Múa lân Tết Nguyên Tiêu</div>
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Phường mình có 3 lễ hội lớn: Tết Nguyên Đán, Nguyên Tiêu, Trung Thu. Đèn lồng đỏ rực, múa lân vang khắp nơi!"
+      </div>
+      <div class="dialogue">
+        <span class="speaker">Bé Huy</span>
+        "Cháu thích nhất Trung Thu! Được rước đèn, ăn bánh với các bạn vui lắm!"
+      </div>
+    `,
+    pageNum: '14'
+  },
+  // PAGE 16 - Con người
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">💖 Con người</div>
+      <h2>Những người hàng xóm tốt bụng <span class="emoji">👨‍👩‍👧‍👦</span></h2>
+      <p class="narrator">Trên đường về, Huy gặp cô Lan bán bánh bao, bác Ba thợ sửa xe, bà Tám bán nước mía. Ai cũng cười vui vẻ chào ông cháu.</p>
+      <div class="dialogue">
+        <span class="speaker">Cô Lan</span>
+        "Ui bé Huy đi chơi với ông à? Cô cho con cái bánh bao mới ra lò nè!"
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Con thấy đó Huy, phường Chợ Quán đẹp không chỉ vì công trình cổ, mà vì con người ở đây rất chân thành, tốt bụng."
+      </div>
+      <div class="fun-fact">
+        <strong>💝 Điều Huy hiểu ra</strong>
+        Nơi đẹp nhất của phường mình không phải là tòa nhà, mà là tình cảm giữa con người với nhau!
+      </div>
+    `,
+    pageNum: '15'
+  },
+  // PAGE 17 - Cảm nghĩ
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">🌟 Cảm nghĩ</div>
+      <h2>Trở về nhà <span class="emoji">🏠</span></h2>
+      <p class="narrator">Khi mặt trời lặn, hai ông cháu trở về nhà. Huy đã kín cả cuốn sổ tay với hình vẽ và ghi chú.</p>
+      <div class="dialogue">
+        <span class="speaker">Bé Huy</span>
+        "Ông ơi, hôm nay là ngày vui nhất của cháu! Cháu học được nhiều điều quá!"
+      </div>
+      <div class="dialogue grandpa">
+        <span class="speaker">Ông nội</span>
+        "Ông cũng rất vui Huy à. Hãy luôn yêu thương và tự hào về nơi mình đang sống nhé con!"
+      </div>
+      <p class="narrator">Tối đó, Huy nằm nghĩ về ngày hôm nay. Phường Chợ Quán thật đặc biệt - có lịch sử, ẩm thực, văn hóa, và những người đáng yêu. 💕</p>
+    `,
+    pageNum: '16'
+  },
+  // PAGE 18 - Lời hứa
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">🌈 Bài học</div>
+      <h2>Lời hứa của Huy <span class="emoji">✨</span></h2>
+      <p class="narrator">Trước khi ngủ, Huy viết vào sổ tay:</p>
+      <div style="background: linear-gradient(135deg, var(--pink-light), var(--yellow-light)); padding: 13px; border-radius: 15px; margin: 10px 0; border: 2px dashed var(--pink); font-family: 'Patrick Hand', cursive; font-size: 0.88rem; line-height: 1.5; color: var(--dark);">
+        <div style="font-weight: bold; color: var(--coral); margin-bottom: 6px;">🌟 Huy sẽ...</div>
+        🌸 Học thật giỏi để làm rạng danh phường<br>
+        🌸 Giữ gìn các di tích luôn sạch đẹp<br>
+        🌸 Kể cho bạn bè nghe về phường mình<br>
+        🌸 Luôn thân thiện với mọi người<br>
+        🌸 Yêu quý phường Chợ Quán cả đời! 💖
+      </div>
+      <p class="narrator">Huy nhắm mắt, mỉm cười trong giấc ngủ. Trong mơ, Huy và ông tiếp tục khám phá những điều thú vị mới... 🌙✨</p>
+    `,
+    pageNum: '17'
+  },
+  // PAGE 19 - Tác giả chia sẻ
+  {
+    class: 'content',
+    html: `
+      <div class="page-label">💌 Lời nhắn</div>
+      <h2>Gửi các bạn đọc <span class="emoji">💕</span></h2>
+      <p class="narrator">Chào các bạn! Mình là người đã viết câu chuyện này.</p>
+      <p>Phường Chợ Quán trong truyện cũng chính là phường thật của mình đang sống. Mình đã tưởng tượng ra bé Huy và ông nội để kể cho các bạn nghe.</p>
+      <div class="fun-fact">
+        <strong>💭 Thông điệp của mình</strong>
+        Mỗi phường ở TP.HCM đều có câu chuyện riêng. Hãy dành một ngày khám phá phường của bạn, bạn sẽ bất ngờ đấy!
+      </div>
+      <p class="narrator">Cảm ơn các bạn đã đọc đến trang cuối. Hy vọng câu chuyện này sẽ giúp bạn yêu thêm nơi mình đang sống. 🌈</p>
+      <div style="text-align: center; font-family: 'Patrick Hand'; color: var(--pink); font-size: 1.1rem; margin-top: 8px;">
+        — Với tất cả yêu thương 💖 —
+      </div>
+    `,
+    pageNum: '18'
+  },
+  // PAGE 20 - The end
+  {
+    class: 'end-page',
+    html: `
+      <div style="font-size: 2.5rem;">🎉✨🎊</div>
+      <h2>CẢM ƠN BẠN<br>ĐÃ ĐỌC!</h2>
+      <div class="end-heart">💖</div>
+      <p>"Dù mai này có đi bất cứ đâu,</p>
+      <p>em vẫn mãi yêu thương</p>
+      <p>phường Chợ Quán của mình."</p>
+      <div style="font-size: 1.8rem; margin: 12px 0;">🌸 🌟 🌈</div>
+      <p style="font-size: 0.8rem; opacity: 0.9;">— THE END —</p>
+    `,
+    pageNum: ''
+  }
+];
+
+// ===== AUDIO =====
+let soundEnabled = true;
+let audioContext = null;
+
+function initAudio() {
+  if (!audioContext) {
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch(e) {}
+  }
+}
+
+function playFlipSound() {
+  if (!soundEnabled) return;
+  initAudio();
+  if (!audioContext) return;
+  
+  const now = audioContext.currentTime;
+  const bufferSize = audioContext.sampleRate * 0.2;
+  const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 3);
+  }
+  
+  const noise = audioContext.createBufferSource();
+  noise.buffer = buffer;
+  
+  const noiseGain = audioContext.createGain();
+  noiseGain.gain.setValueAtTime(0.15, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+  
+  const filter = audioContext.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 2000;
+  filter.Q.value = 1;
+  
+  noise.connect(filter);
+  filter.connect(noiseGain);
+  noiseGain.connect(audioContext.destination);
+  
+  noise.start(now);
+  noise.stop(now + 0.2);
+}
+
+function playPageTurnSparkle() {
+  if (!soundEnabled) return;
+  initAudio();
+  if (!audioContext) return;
+  
+  const now = audioContext.currentTime;
+  [880, 1100, 1320].forEach((freq, i) => {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.frequency.value = freq;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.05, now + i * 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.3);
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.start(now + i * 0.05);
+    osc.stop(now + i * 0.05 + 0.3);
+  });
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+  if (soundEnabled) {
+    initAudio();
+    playPageTurnSparkle();
+  }
+}
+
+// ===== BUILD =====
+const book = document.getElementById('book');
+const leftPage = document.getElementById('leftPage');
+
+function createPageElement(index, frontContent, backContent, frontClass, backClass, frontPageNum, backPageNum) {
+  const page = document.createElement('div');
+  page.className = 'page';
+  page.style.zIndex = pages.length - index;
+  
+  const front = document.createElement('div');
+  front.className = 'front ' + (frontClass || 'content');
+  front.innerHTML = frontContent + (frontPageNum ? `<div class="page-num">Trang ${frontPageNum}</div>` : '');
+  
+  const back = document.createElement('div');
+  back.className = 'back ' + (backClass || 'content');
+  back.innerHTML = backContent + (backPageNum ? `<div class="page-num">Trang ${backPageNum}</div>` : '');
+  
+  page.appendChild(front);
+  page.appendChild(back);
+  return page;
+}
+
+const flipPages = [];
+for (let i = 0; i < pages.length; i += 2) {
+  const frontPage = pages[i];
+  const backPage = pages[i + 1];
+  
+  const pageEl = createPageElement(
+    i / 2,
+    frontPage.html,
+    backPage ? backPage.html : '<div style="text-align:center; margin:auto; color:var(--pink);"><div style="font-size:3rem;">💖</div><div>— Hết —</div></div>',
+    frontPage.class,
+    backPage ? backPage.class : 'content',
+    frontPage.pageNum,
+    backPage ? backPage.pageNum : ''
+  );
+  book.appendChild(pageEl);
+  flipPages.push(pageEl);
+}
+
+function createSparkles() {
+  const bookRect = document.querySelector('.book-container').getBoundingClientRect();
+  const sparkleChars = ['✨', '⭐', '🌟', '💫'];
+  for (let i = 0; i < 6; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.textContent = sparkleChars[Math.floor(Math.random() * sparkleChars.length)];
+    sparkle.style.left = (bookRect.left + bookRect.width / 2) + 'px';
+    sparkle.style.top = (bookRect.top + bookRect.height / 2) + 'px';
+    sparkle.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+    sparkle.style.setProperty('--ty', (Math.random() * 200 - 100) + 'px');
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 1000);
+  }
+}
+
+let currentSpread = 0;
+const totalSpreads = flipPages.length;
+
+function updateView() {
+  flipPages.forEach((page, idx) => {
+    if (idx < currentSpread) {
+      page.classList.add('flipped');
+      page.style.zIndex = idx + 1;
+    } else {
+      page.classList.remove('flipped');
+      page.style.zIndex = totalSpreads - idx;
+    }
+  });
+  
+  if (currentSpread === 0) {
+    leftPage.className = 'left-static left';
+    leftPage.innerHTML = `
+      <div style="margin:auto; text-align:center; padding: 15px;">
+        <div style="font-size: 2.8rem; margin-bottom: 8px;">📚</div>
+        <div style="font-family: 'Patrick Hand', cursive; font-size: 0.95rem; color: var(--pink); letter-spacing: 2px; margin-bottom: 10px;">✨ MỤC LỤC ✨</div>
+        <div style="width:50px; height:3px; background:linear-gradient(90deg, var(--pink), var(--yellow)); margin:8px auto 12px auto; border-radius: 3px;"></div>
+        <div style="font-family: 'Patrick Hand', cursive; font-size: 0.88rem; line-height: 1.8; text-align:left; max-width:200px; margin: 0 auto; color: var(--dark);">
+          <div style="padding: 3px 8px; background: var(--pink-light); border-radius: 10px; margin-bottom: 4px;">📖 Mở truyện</div>
+          <div style="padding: 3px 8px; background: var(--yellow-light); border-radius: 10px; margin-bottom: 4px;">⛪ Chương 1: Cổ kính</div>
+          <div style="padding: 3px 8px; background: var(--mint-light); border-radius: 10px; margin-bottom: 4px;">🎓 Chương 2: Trường học</div>
+          <div style="padding: 3px 8px; background: var(--sky-light); border-radius: 10px; margin-bottom: 4px;">🍜 Chương 3: Ẩm thực</div>
+          <div style="padding: 3px 8px; background: var(--pink-light); border-radius: 10px; margin-bottom: 4px;">🏮 Chương 4: Lễ hội</div>
+          <div style="padding: 3px 8px; background: var(--yellow-light); border-radius: 10px;">💖 Cảm nghĩ</div>
+        </div>
+      </div>
+    `;
+  } else {
+    const prevFlipIdx = currentSpread - 1;
+    const leftContentIdx = prevFlipIdx * 2 + 1;
+    if (leftContentIdx < pages.length) {
+      const p = pages[leftContentIdx];
+      leftPage.className = 'left-static left ' + (p.class || 'content');
+      leftPage.innerHTML = p.html + (p.pageNum ? `<div class="page-num">Trang ${p.pageNum}</div>` : '');
+    }
+  }
+  
+  const currentPageNum = currentSpread === 0 ? 1 : Math.min(currentSpread * 2 + 1, pages.length);
+  document.getElementById('pageIndicator').textContent = `${currentPageNum} / ${pages.length}`;
+  
+  document.getElementById('prevBtn').disabled = currentSpread === 0;
+  document.getElementById('nextBtn').disabled = currentSpread >= totalSpreads;
+}
+
+function nextPage() {
+  if (currentSpread < totalSpreads) {
+    currentSpread++;
+    playFlipSound();
+    createSparkles();
+    updateView();
+  }
+}
+
+function prevPage() {
+  if (currentSpread > 0) {
+    currentSpread--;
+    playFlipSound();
+    createSparkles();
+    updateView();
+  }
+}
+
+function firstPage() {
+  currentSpread = 0;
+  playPageTurnSparkle();
+  updateView();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') nextPage();
+  if (e.key === 'ArrowLeft') prevPage();
+  if (e.key === 'Home') firstPage();
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.btn') || e.target.closest('.controls') || e.target.closest('.sound-toggle') || e.target.closest('.intro-overlay')) return;
+  const bookEl = e.target.closest('.book-container');
+  if (!bookEl) return;
+  const rect = bookEl.getBoundingClientRect();
+  const midX = rect.left + rect.width / 2;
+  if (e.clientX > midX) nextPage();
+  else prevPage();
+});
+
+function startBook() {
+  document.getElementById('introOverlay').classList.add('hidden');
+  initAudio();
+  setTimeout(() => playPageTurnSparkle(), 300);
+}
+
+updateView();
+</script>
+</body>
+</html>
